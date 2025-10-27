@@ -1,10 +1,12 @@
 import axios from "axios";
 
+// ✅ Correct Laravel API base URL
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000/api", // Laravel backend API
+  baseURL: "http://127.0.0.1:8000/api",
+  withCredentials: true,
 });
 
-// Automatically attach token to every request
+// ✅ Attach token automatically
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -12,5 +14,8 @@ API.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// ✅ Export helper functions
+export const getProjects = () => API.get("/projects");
 
 export default API;
