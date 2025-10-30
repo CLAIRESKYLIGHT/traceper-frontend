@@ -12,7 +12,11 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import Barangays from "./pages/Barangays";
+import Officials from "./pages/Officials";
+import Contractors from "./pages/Contractors";
+import Documents from "./pages/Documents";
 import Sidebar from "./components/Sidebar";
+import Transactions from "./pages/Transactions";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -53,6 +57,10 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/projects" element={<Projects />} />
                     <Route path="/barangays" element={<Barangays />} />
+                    <Route path="/officials" element={<Officials />} />
+                    <Route path="/contractors" element={<Contractors />} />
+                    <Route path="/documents" element={<Documents />} />
+                    <Route path="/transactions" element={<Transactions />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                   </Routes>
                 </div>

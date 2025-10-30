@@ -30,6 +30,8 @@ const Sidebar = () => {
     { name: "Projects", path: "/projects", icon: "🏗️" },
     { name: "Barangays", path: "/barangays", icon: "🏠" },
     { name: "Officials", path: "/officials", icon: "👥" },
+    { name: "Documents", path: "/documents", icon: "📄" },
+    { name: "Transactions", path: "/transactions", icon: "💰" },
     { name: "Contractors", path: "/contractors", icon: "⚙️" },
   ];
 
