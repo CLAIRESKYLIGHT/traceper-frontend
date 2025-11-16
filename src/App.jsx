@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import Barangays from "./pages/Barangays";
+import BarangayDetails from "./pages/BarangayDetails";
 import Officials from "./pages/Officials";
 import Contractors from "./pages/Contractors";
 import Documents from "./pages/Documents";
@@ -57,6 +58,10 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/projects" element={<Projects />} />
                     <Route path="/barangays" element={<Barangays />} />
+                    <Route
+                      path="/barangays/:id"
+                      element={<BarangayDetails />}
+                    />
                     <Route path="/officials" element={<Officials />} />
                     <Route path="/contractors" element={<Contractors />} />
                     <Route path="/documents" element={<Documents />} />

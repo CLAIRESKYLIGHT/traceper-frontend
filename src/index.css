@@ -1,3 +1,51 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: var(--brand-gray);
+    color: #111827; /* gray-900 */
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    color: var(--brand-blue);
+    font-weight: 600;
+  }
+
+  a {
+    color: var(--brand-lightblue);
+    transition: color 0.2s;
+  }
+
+  a:hover {
+    color: var(--brand-yellow);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply text-white font-semibold px-4 py-2 rounded-lg shadow transition-all;
+    background-color: var(--brand-blue);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--brand-lightblue);
+  }
+
+  .btn-secondary {
+    @apply font-semibold px-4 py-2 rounded-lg shadow transition-all;
+    background-color: var(--brand-yellow);
+    color: var(--brand-blue);
+  }
+
+  .btn-secondary:hover {
+    background-color: #fde047; /* yellow-300 */
+  }
+
+  .card {
+    @apply bg-white p-6 rounded-xl shadow transition-all;
+  }
+}
