@@ -19,6 +19,7 @@ import Contractors from "./pages/Contractors";
 import Documents from "./pages/Documents";
 import Navbar from "./components/Navbar";
 import Transactions from "./pages/Transactions";
+import Profile from "./pages/Profile";
 import { getUserRole } from "./utils/useAuth";
 
 function App() {
@@ -92,6 +93,7 @@ function App() {
                     <Route path="/officials" element={<Officials />} />
                     <Route path="/documents" element={<Documents />} />
                     <Route path="/transactions" element={<Transactions />} />
+                    <Route path="/profile" element={<Profile />} />
                     {/* Admin-only routes */}
                     {isAdmin && (
                       <Route path="/contractors" element={<Contractors />} />

@@ -11,6 +11,8 @@ export default function Documents() {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [projectId, setProjectId] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+  const [documentType, setDocumentType] = useState("project"); // "project" or "transaction"
   const [uploading, setUploading] = useState(false);
 
   // Debug: Log admin status
@@ -63,9 +65,23 @@ export default function Documents() {
     }
   };
 
+
+  // ✅ Fetch transactions for dropdown
+  const [transactions, setTransactions] = useState([]);
+  const fetchTransactions = async () => {
+    try {
+      const response = await API.get("/transactions");
+      const transactionsData = response.data?.data || response.data || [];
+      setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+    }
+  };
+
   useEffect(() => {
     fetchDocuments();
     fetchProjects();
+    fetchTransactions();
   }, []);
 
   // ✅ Handle upload
@@ -77,8 +93,14 @@ export default function Documents() {
       return;
     }
 
-    if (!projectId) {
+    // Validate: either project_id or transaction_id must be provided
+    if (documentType === "project" && !projectId) {
       alert("Please select a project.");
+      return;
+    }
+
+    if (documentType === "transaction" && !transactionId) {
+      alert("Please select a transaction.");
       return;
     }
 
@@ -92,14 +114,23 @@ export default function Documents() {
     const formData = new FormData();
     formData.append("title", title.trim());
     formData.append("file", file);
-    formData.append("project_id", projectId);
+    
+    // Add project_id or transaction_id based on document type
+    if (documentType === "transaction") {
+      formData.append("transaction_id", transactionId);
+      // project_id will be auto-linked by backend
+    } else {
+      formData.append("project_id", projectId);
+    }
 
     try {
       setUploading(true);
       setError(""); // Clear any previous errors
       console.log("📤 Uploading document:", { 
         title: title.trim(), 
-        project_id: projectId,
+        documentType,
+        project_id: documentType === "project" ? projectId : "auto-linked",
+        transaction_id: documentType === "transaction" ? transactionId : null,
         fileName: file.name, 
         fileSize: file.size 
       });
@@ -114,6 +145,8 @@ export default function Documents() {
       setTitle("");
       setFile(null);
       setProjectId("");
+      setTransactionId("");
+      setDocumentType("project");
       // Reset file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) {
@@ -278,23 +311,86 @@ export default function Documents() {
           <form onSubmit={handleUpload} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project <span className="text-red-500">*</span>
+                Document Type <span className="text-red-500">*</span>
               </label>
-              <select
-                value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-                disabled={uploading}
-              >
-                <option value="">Select a project</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.title}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="documentType"
+                    value="project"
+                    checked={documentType === "project"}
+                    onChange={(e) => {
+                      setDocumentType(e.target.value);
+                      setTransactionId("");
+                    }}
+                    disabled={uploading}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span>Project Document</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="documentType"
+                    value="transaction"
+                    checked={documentType === "transaction"}
+                    onChange={(e) => {
+                      setDocumentType(e.target.value);
+                      setProjectId("");
+                    }}
+                    disabled={uploading}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span>Transaction Document (Proof of Payment)</span>
+                </label>
+              </div>
             </div>
+
+            {documentType === "project" ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Project <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={projectId}
+                  onChange={(e) => setProjectId(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  disabled={uploading}
+                >
+                  <option value="">Select a project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Transaction <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={transactionId}
+                  onChange={(e) => setTransactionId(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  disabled={uploading}
+                >
+                  <option value="">Select a transaction</option>
+                  {transactions.map((tx) => (
+                    <option key={tx.id} value={tx.id}>
+                      {tx.project?.title || "N/A"} - {tx.type} - ₱{parseFloat(tx.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({tx.transaction_date ? new Date(tx.transaction_date).toLocaleDateString() : "N/A"})
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  Project will be automatically linked to this transaction
+                </p>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Document Title <span className="text-red-500">*</span>
@@ -385,7 +481,23 @@ export default function Documents() {
             >
               <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <h3 className="font-bold text-xl line-clamp-2 relative z-10">{doc.title}</h3>
+                <div className="relative z-10">
+                  <h3 className="font-bold text-xl line-clamp-2">{doc.title}</h3>
+                  {doc.transaction_id && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-yellow-400/20 text-yellow-200 rounded text-xs font-semibold">
+                        Transaction Document
+                      </span>
+                    </div>
+                  )}
+                  {!doc.transaction_id && doc.project_id && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-blue-400/20 text-blue-200 rounded text-xs font-semibold">
+                        Project Document
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="p-5 space-y-4">
                 <div>
