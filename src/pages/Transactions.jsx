@@ -39,28 +39,57 @@ export default function Transactions() {
       const transactionsData = response.data?.data || response.data || [];
       const transactionsArray = Array.isArray(transactionsData) ? transactionsData : [];
       
-      // Fetch documents for each transaction
-      const transactionsWithDocs = await Promise.all(
-        transactionsArray.map(async (tx) => {
-          try {
-            const txResponse = await API.get(`/transactions/${tx.id}`);
-            return {
-              ...tx,
-              documents: txResponse.data?.data?.documents || txResponse.data?.documents || []
-            };
-          } catch (err) {
-            console.error(`Error fetching documents for transaction ${tx.id}:`, err);
-            return { ...tx, documents: [] };
-          }
-        })
-      );
+      // Check if documents are already included in the response
+      const hasDocumentsInResponse = transactionsArray.some(tx => tx.documents !== undefined);
       
-      setTransactions(transactionsWithDocs);
+      if (hasDocumentsInResponse) {
+        // Documents already included, use them directly
+        setTransactions(transactionsArray.map(tx => ({
+          ...tx,
+          documents: tx.documents || []
+        })));
+      } else {
+        // Documents not included, set empty array initially (lazy load on demand)
+        setTransactions(transactionsArray.map(tx => ({
+          ...tx,
+          documents: [],
+          documentsLoaded: false
+        })));
+      }
     } catch (err) {
       console.error("Error fetching transactions:", err);
       setError("Failed to load transactions.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ✅ Lazy load documents for a specific transaction (only when needed)
+  const loadTransactionDocuments = async (transactionId) => {
+    const transaction = transactions.find(tx => tx.id === transactionId);
+    if (!transaction) {
+      return; // Transaction doesn't exist
+    }
+
+    try {
+      // Fetch transaction with documents - backend includes documents in response
+      const txResponse = await API.get(`/transactions/${transactionId}`);
+      const txData = txResponse.data?.data || txResponse.data;
+      // transaction.data.documents will have the auto-created document
+      const documents = txData.documents || [];
+      
+      setTransactions(prev => prev.map(tx => 
+        tx.id === transactionId 
+          ? { ...tx, documents, documentsLoaded: true }
+          : tx
+      ));
+    } catch (err) {
+      console.error(`Error fetching documents for transaction ${transactionId}:`, err);
+      setTransactions(prev => prev.map(tx => 
+        tx.id === transactionId 
+          ? { ...tx, documents: [], documentsLoaded: true }
+          : tx
+      ));
     }
   };
 
@@ -87,9 +116,14 @@ export default function Transactions() {
   };
 
   useEffect(() => {
-    fetchTransactions();
-    fetchProjects();
-    fetchOfficials();
+    // Fetch in parallel for better performance
+    Promise.all([
+      fetchTransactions(),
+      fetchProjects(),
+      fetchOfficials()
+    ]).catch(err => {
+      console.error("Error fetching initial data:", err);
+    });
   }, []);
 
   // ✅ Handle form changes
@@ -266,6 +300,146 @@ export default function Transactions() {
           || "Failed to delete transaction.";
         alert(errorMessage);
       }
+    }
+  };
+
+  // ✅ Open document upload modal
+  const openDocumentUpload = async (transaction) => {
+    setSelectedTransactionForDoc(transaction);
+    setDocumentFile(null);
+    setDocumentTitle("");
+    setDocumentUploadError("");
+
+    // Load transaction with documents to get placeholder document
+    try {
+      const txResponse = await API.get(`/transactions/${transaction.id}`);
+      const txData = txResponse.data?.data || txResponse.data;
+      const documents = txData.documents || [];
+      
+      // Update transaction in state with documents
+      setTransactions(prev => prev.map(tx => 
+        tx.id === transaction.id 
+          ? { ...tx, documents, documentsLoaded: true }
+          : tx
+      ));
+
+      // Check if there's a placeholder document (document without file_path or with empty file_path)
+      const placeholderDoc = documents.find(doc => !doc.file_path || doc.file_path === '');
+      if (placeholderDoc) {
+        // Pre-fill with placeholder document info
+        setSelectedTransactionForDoc({ ...transaction, placeholderDocumentId: placeholderDoc.id, documents });
+      }
+    } catch (err) {
+      console.error("Error loading transaction documents:", err);
+    }
+  };
+
+  // ✅ Close document upload modal
+  const closeDocumentUpload = () => {
+    setSelectedTransactionForDoc(null);
+    setDocumentFile(null);
+    setDocumentTitle("");
+    setDocumentUploadError("");
+  };
+
+  // ✅ Handle document upload for transaction
+  const handleDocumentUpload = async (e) => {
+    e.preventDefault();
+    
+    if (!documentFile) {
+      setDocumentUploadError("Please select a file to upload.");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (documentFile.size > maxSize) {
+      setDocumentUploadError(`File size exceeds the maximum limit of 10MB. Your file is ${(documentFile.size / 1024 / 1024).toFixed(2)}MB.`);
+      return;
+    }
+
+    try {
+      setUploadingDocument(true);
+      setDocumentUploadError("");
+
+      // Get the transaction with documents to find placeholder
+      const txResponse = await API.get(`/transactions/${selectedTransactionForDoc.id}`);
+      const txData = txResponse.data?.data || txResponse.data;
+      const documents = txData.documents || [];
+      
+      // Find placeholder document (document without file_path or with empty file_path)
+      const placeholderDoc = documents.find(doc => !doc.file_path || doc.file_path === '');
+
+      if (placeholderDoc) {
+        // Update the auto-created placeholder document with file
+        console.log("📤 Updating placeholder document with file:", placeholderDoc.id);
+        
+        const formData = new FormData();
+        formData.append("file", documentFile);
+        if (documentTitle) {
+          formData.append("type", documentTitle.trim()); // Optional
+        }
+
+        await API.put(`/documents/${placeholderDoc.id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("✅ File uploaded to placeholder document successfully");
+      } else {
+        // No placeholder found, create new document
+        // ✅ You only need to send transaction_id - project_id is auto-filled!
+        console.log("📤 Creating new document for transaction");
+        
+        const formData = new FormData();
+        formData.append("transaction_id", selectedTransactionForDoc.id); // Only this is needed!
+        formData.append("title", documentTitle.trim() || "Transaction Document");
+        if (documentTitle) {
+          formData.append("type", documentTitle.trim());
+        }
+        formData.append("file", documentFile);
+
+        await API.post("/documents", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("✅ New document created successfully");
+      }
+
+      // Reload transaction documents
+      await loadTransactionDocuments(selectedTransactionForDoc.id);
+      
+      // Reset form and close modal
+      closeDocumentUpload();
+      
+      alert("Document uploaded successfully!");
+    } catch (err) {
+      console.error("❌ Document upload error:", err);
+      
+      let errorMessage = "Failed to upload document. ";
+      if (!err.response) {
+        errorMessage += "Cannot connect to the server.";
+      } else if (err.response.status === 401) {
+        errorMessage = "You are not authorized. Please log in again.";
+      } else if (err.response.status === 403) {
+        errorMessage = "You don't have permission to upload documents.";
+      } else if (err.response.status === 413) {
+        errorMessage = "File is too large. Please select a smaller file.";
+      } else if (err.response.status === 422) {
+        const errors = err.response.data?.errors;
+        if (errors) {
+          errorMessage = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(", ") : messages}`)
+            .join("\n");
+        } else {
+          errorMessage = err.response.data?.message || "Validation failed.";
+        }
+      } else {
+        errorMessage = err.response.data?.message || errorMessage;
+      }
+      
+      setDocumentUploadError(errorMessage);
+    } finally {
+      setUploadingDocument(false);
     }
   };
 
@@ -590,35 +764,48 @@ export default function Transactions() {
                   </div>
                   
                   {/* Documents Section */}
-                  {tx.documents && tx.documents.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    {!tx.documentsLoaded && tx.documents?.length === 0 && (
+                      <button
+                        onClick={() => loadTransactionDocuments(tx.id)}
+                        className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p className="text-sm font-semibold text-gray-700">Supporting Documents ({tx.documents.length})</p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {tx.documents.map((doc) => (
-                          <a
-                            key={doc.id}
-                            href={`http://127.0.0.1:8000/storage/${doc.file_path}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                            </svg>
-                            <span>{doc.title}</span>
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                        Load Documents
+                      </button>
+                    )}
+                    {tx.documents && tx.documents.length > 0 && (
+                      <>
+                        <div className="flex items-center gap-2 mb-2">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <p className="text-sm font-semibold text-gray-700">Supporting Documents ({tx.documents.length})</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {tx.documents.map((doc) => (
+                            <a
+                              key={doc.id}
+                              href={`http://127.0.0.1:8000/storage/${doc.file_path}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                              </svg>
+                              <span>{doc.title}</span>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
@@ -704,17 +891,21 @@ export default function Transactions() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Document Title <span className="text-red-500">*</span>
+                  Document Type/Title
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g., Payment Receipt, Invoice"
+                  placeholder="e.g., receipt, invoice (optional)"
                   value={documentTitle}
                   onChange={(e) => setDocumentTitle(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
                   disabled={uploadingDocument}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  {selectedTransactionForDoc?.placeholderDocumentId 
+                    ? "Updating placeholder document with file"
+                    : "Will create new document if no placeholder exists"}
+                </p>
               </div>
 
               <div>
