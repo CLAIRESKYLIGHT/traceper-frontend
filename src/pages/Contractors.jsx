@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
+import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
 
 export default function Contractors() {
   const { isAdmin } = useAuth();
@@ -18,6 +20,14 @@ export default function Contractors() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [toast, setToast] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+    type: "danger"
+  });
 
   // ✅ Fetch all contractors
   const fetchContractors = async () => {
@@ -107,7 +117,7 @@ export default function Contractors() {
       
       await fetchContractors();
       closeModal();
-      alert(editingContractor ? "Contractor updated successfully!" : "Contractor created successfully!");
+      setToast({ message: editingContractor ? "Contractor updated successfully!" : "Contractor created successfully!", type: "success" });
     } catch (err) {
       console.error("❌ Error saving contractor:", err);
       console.error("Error details:", {
@@ -156,16 +166,24 @@ export default function Contractors() {
   };
 
   // ✅ Delete contractor
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this contractor?")) {
-      try {
-        await API.delete(`/contractors/${id}`);
-        fetchContractors();
-      } catch (err) {
-        console.error("Error deleting contractor:", err);
-        alert("Failed to delete contractor.");
+  const handleDelete = (id) => {
+    const contractor = contractors.find(c => c.id === id);
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Contractor",
+      message: `Are you sure you want to delete "${contractor?.name || "this contractor"}"? This action cannot be undone.`,
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/contractors/${id}`);
+          await fetchContractors();
+          setToast({ message: "Contractor deleted successfully!", type: "success" });
+        } catch (err) {
+          console.error("Error deleting contractor:", err);
+          setToast({ message: err.response?.data?.message || "Failed to delete contractor.", type: "error" });
+        }
       }
-    }
+    });
   };
 
   if (loading)
@@ -283,12 +301,22 @@ export default function Contractors() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="card-modern w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scaleIn">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold gradient-text">
-                {editingContractor ? "Edit Contractor" : "Add New Contractor"}
-              </h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scaleIn">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">
+                  {editingContractor ? "Edit Contractor" : "Add New Contractor"}
+                </h2>
+                <button
+                  onClick={closeModal}
+                  className="text-white hover:text-blue-200 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {submitError && (
@@ -423,6 +451,25 @@ export default function Contractors() {
           </div>
         </div>
       )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null, type: "danger" })}
+        onConfirm={confirmModal.onConfirm || (() => {})}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+      />
     </div>
   );
 }

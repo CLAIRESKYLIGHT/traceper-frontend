@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
+import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
 
 export default function Officials() {
   const { isAdmin } = useAuth();
@@ -14,6 +16,14 @@ export default function Officials() {
     position: "",
     contact: "",
     barangay_id: "",
+  });
+  const [toast, setToast] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+    type: "danger"
   });
 
   // ✅ Fetch all officials
@@ -66,23 +76,32 @@ export default function Officials() {
       }
       fetchOfficials();
       closeModal();
+      setToast({ message: editingOfficial ? "Official updated successfully!" : "Official created successfully!", type: "success" });
     } catch (err) {
       console.error("Error saving official:", err);
-      alert("Failed to save official.");
+      setToast({ message: err.response?.data?.message || "Failed to save official.", type: "error" });
     }
   };
 
   // ✅ Delete official
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this official?")) {
-      try {
-        await API.delete(`/officials/${id}`);
-        fetchOfficials();
-      } catch (err) {
-        console.error("Error deleting official:", err);
-        alert("Failed to delete official.");
+  const handleDelete = (id) => {
+    const official = officials.find(o => o.id === id);
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Official",
+      message: `Are you sure you want to delete "${official?.name || "this official"}"? This action cannot be undone.`,
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/officials/${id}`);
+          fetchOfficials();
+          setToast({ message: "Official deleted successfully!", type: "success" });
+        } catch (err) {
+          console.error("Error deleting official:", err);
+          setToast({ message: err.response?.data?.message || "Failed to delete official.", type: "error" });
+        }
       }
-    }
+    });
   };
 
   if (loading) {
@@ -241,12 +260,22 @@ export default function Officials() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {editingOfficial ? "Edit Official" : "Add New Official"}
-              </h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scaleIn">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">
+                  {editingOfficial ? "Edit Official" : "Add New Official"}
+                </h2>
+                <button
+                  onClick={closeModal}
+                  className="text-white hover:text-blue-200 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
@@ -319,6 +348,25 @@ export default function Officials() {
           </div>
         </div>
       )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null, type: "danger" })}
+        onConfirm={confirmModal.onConfirm || (() => {})}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+      />
     </div>
   );
 }
