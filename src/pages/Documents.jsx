@@ -79,9 +79,14 @@ export default function Documents() {
   };
 
   useEffect(() => {
-    fetchDocuments();
-    fetchProjects();
-    fetchTransactions();
+    // Fetch in parallel for better performance
+    Promise.all([
+      fetchDocuments(),
+      fetchProjects(),
+      fetchTransactions()
+    ]).catch(err => {
+      console.error("Error fetching initial data:", err);
+    });
   }, []);
 
   // ✅ Handle upload
@@ -118,7 +123,11 @@ export default function Documents() {
     // Add project_id or transaction_id based on document type
     if (documentType === "transaction") {
       formData.append("transaction_id", transactionId);
-      // project_id will be auto-linked by backend
+      // project_id is auto-filled by backend from transaction
+      // Optionally add type field
+      if (title.trim()) {
+        formData.append("type", title.trim());
+      }
     } else {
       formData.append("project_id", projectId);
     }
