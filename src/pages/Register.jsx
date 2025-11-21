@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../services/api";
+import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
@@ -13,7 +13,7 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/register", {
+      await API.post("/register", {
         name,
         email,
         password,

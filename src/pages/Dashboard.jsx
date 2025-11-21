@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import API from "../services/api";
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -13,7 +13,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await api.get("/dashboard/stats");
+        const { data } = await API.get("dashboard/");
         setStats(data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);

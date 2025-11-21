@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api";
+import API from "../services/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,14 +15,22 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await api.post("/login", { email, password });
+      const res = await API.post("/login", { email, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user_name", res.data.user?.name || "User");
+      // Store user role (assuming API returns role as 'admin' or 'citizen')
+      localStorage.setItem("user_role", res.data.user?.role || "citizen");
 
       // 🔥 Trigger re-render in App.jsx
       window.dispatchEvent(new Event("storage"));
 
-      navigate("/dashboard");
+      // Redirect based on role
+      const userRole = res.data.user?.role || "citizen";
+      if (userRole === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/citizen/dashboard");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");
     } finally {
