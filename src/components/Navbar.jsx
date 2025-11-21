@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
+import GlobalSearch from "./GlobalSearch";
 
 const Navbar = () => {
   const location = useLocation();
@@ -25,13 +26,78 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: "Dashboard", path: isAdmin ? "/admin/dashboard" : "/citizen/dashboard", icon: "📊" },
-    { name: "Projects", path: "/projects", icon: "🏗️" },
-    { name: "Barangays", path: "/barangays", icon: "🏠" },
-    { name: "Officials", path: "/officials", icon: "👥" },
-    { name: "Documents", path: "/documents", icon: "📄" },
-    { name: "Transactions", path: "/transactions", icon: "💰" },
-    ...(isAdmin ? [{ name: "Contractors", path: "/contractors", icon: "⚙️" }] : []),
+    { 
+      name: "Dashboard", 
+      path: isAdmin ? "/admin/dashboard" : "/citizen/dashboard",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      )
+    },
+    { 
+      name: "Projects", 
+      path: "/projects",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      )
+    },
+    { 
+      name: "Barangays", 
+      path: "/barangays",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      )
+    },
+    { 
+      name: "Officials", 
+      path: "/officials",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      )
+    },
+    { 
+      name: "Documents", 
+      path: "/documents",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      )
+    },
+    { 
+      name: "Financials", 
+      path: "/financials",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    },
+    { 
+      name: "IRA Shares", 
+      path: "/barangay-ira-shares",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      )
+    },
+    ...(isAdmin ? [{ 
+      name: "Contractors", 
+      path: "/contractors",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      )
+    }] : []),
   ];
 
   const isActiveRoute = (path) => {
@@ -39,68 +105,71 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg border-b-2 border-yellow-400 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm backdrop-blur-sm bg-white/95">
+      <div className="max-w-[1920px] mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="flex items-center h-16 gap-2 lg:gap-3">
           {/* Logo */}
-          <Link to={isAdmin ? "/admin/dashboard" : "/citizen/dashboard"} className="flex items-center gap-3 group">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ring-2 ring-yellow-400/30">
-              <span className="text-yellow-400 font-bold text-xl">T</span>
+          <Link to={isAdmin ? "/admin/dashboard" : "/citizen/dashboard"} className="flex items-center gap-2 group flex-shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
             </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                TracePer
+            <div className="hidden md:block">
+              <h1 className="text-sm font-bold text-gray-900 tracking-tight leading-tight whitespace-nowrap">
+                Matnog Portal
               </h1>
-              <p className="text-xs text-gray-500">Transparency Portal</p>
             </div>
           </Link>
 
+          {/* Global Search - Desktop */}
+          <div className="hidden lg:block flex-1 min-w-0 max-w-md mx-1">
+            <GlobalSearch />
+          </div>
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-0.5 flex-shrink-0 min-w-0">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`
-                  relative px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300
-                  group
+                  relative px-2 py-1.5 rounded-md font-medium text-xs transition-all duration-200
+                  flex items-center gap-1 whitespace-nowrap flex-shrink-0
                   ${
                     isActiveRoute(item.path)
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
-                      : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                   }
                 `}
+                aria-current={isActiveRoute(item.path) ? "page" : undefined}
+                title={item.name}
               >
-                <span className="flex items-center gap-2">
-                  <span>{item.icon}</span>
-                  <span>{item.name}</span>
+                <span className={`flex-shrink-0 ${isActiveRoute(item.path) ? "text-white" : "text-gray-500"}`}>
+                  {React.cloneElement(item.icon, { className: "w-4 h-4" })}
                 </span>
-                {isActiveRoute(item.path) && (
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-yellow-400 rounded-full"></div>
-                )}
+                <span className="hidden 2xl:inline">{item.name}</span>
               </Link>
             ))}
           </div>
 
           {/* User Profile & Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 ml-auto flex-shrink-0">
             {/* User Info */}
             <div className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors group"
+                className="flex items-center gap-1.5 px-1.5 py-1 rounded-lg hover:bg-gray-50 transition-colors group"
+                aria-label="User menu"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center text-blue-900 font-bold text-sm shadow-md ring-2 ring-yellow-300/50 group-hover:scale-110 transition-transform">
+                <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white font-semibold text-xs shadow-sm">
                   {userName?.charAt(0).toUpperCase() || "U"}
                 </div>
-                <div className="hidden sm:block text-left">
-                  <p className="text-sm font-semibold text-gray-900">{userName || "User"}</p>
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <span className={`w-2 h-2 rounded-full ${isAdmin ? "bg-green-500" : "bg-blue-500"}`}></span>
-                    {isAdmin ? "Administrator" : "Citizen"}
-                  </p>
+                <div className="hidden lg:block text-left">
+                  <p className="text-xs font-semibold text-gray-900 leading-tight truncate max-w-[100px]">{userName || "User"}</p>
+                  <p className="text-[10px] text-gray-500 leading-tight">{isAdmin ? "Admin" : "Citizen"}</p>
                 </div>
-                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-gray-400 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -109,26 +178,26 @@ const Navbar = () => {
               {isProfileOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)}></div>
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-20 animate-fadeIn">
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-semibold text-gray-900">{userName || "User"}</p>
-                      <p className="text-xs text-gray-500">{isAdmin ? "Administrator" : "Citizen"}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{isAdmin ? "Administrator" : "Citizen"}</p>
                     </div>
                     <Link
                       to="/profile"
                       onClick={() => setIsProfileOpen(false)}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       My Profile
                     </Link>
                     <button
                       onClick={logout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
                       Logout
@@ -141,7 +210,8 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-blue-50 transition-colors"
+              className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (
@@ -156,27 +226,33 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 animate-slideDown">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMenuOpen(false)}
-                className={`
-                  block px-4 py-3 rounded-lg font-medium text-sm transition-all duration-200
-                  ${
-                    isActiveRoute(item.path)
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
-                      : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                  }
-                `}
-              >
-                <span className="flex items-center gap-2">
-                  <span>{item.icon}</span>
+          <div className="lg:hidden py-4 border-t border-gray-200">
+            {/* Global Search - Mobile */}
+            <div className="px-4 mb-4">
+              <GlobalSearch />
+            </div>
+            <div className="space-y-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-sm transition-colors
+                    ${
+                      isActiveRoute(item.path)
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }
+                  `}
+                >
+                  <span className={isActiveRoute(item.path) ? "text-white" : "text-gray-500"}>
+                    {item.icon}
+                  </span>
                   <span>{item.name}</span>
-                </span>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>

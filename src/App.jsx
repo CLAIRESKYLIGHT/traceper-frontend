@@ -18,8 +18,9 @@ import Officials from "./pages/Officials";
 import Contractors from "./pages/Contractors";
 import Documents from "./pages/Documents";
 import Navbar from "./components/Navbar";
-import Transactions from "./pages/Transactions";
+import Financials from "./pages/Financials";
 import Profile from "./pages/Profile";
+import BarangayIRAShares from "./pages/BarangayIRAShares";
 import { getUserRole } from "./utils/useAuth";
 
 function App() {
@@ -92,8 +93,9 @@ function App() {
                     />
                     <Route path="/officials" element={<Officials />} />
                     <Route path="/documents" element={<Documents />} />
-                    <Route path="/transactions" element={<Transactions />} />
+                    <Route path="/financials" element={<Financials />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/barangay-ira-shares" element={<BarangayIRAShares />} />
                     {/* Admin-only routes */}
                     {isAdmin && (
                       <Route path="/contractors" element={<Contractors />} />

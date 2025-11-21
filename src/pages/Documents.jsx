@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
+import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
+import SearchBar from "../components/SearchBar";
 
 export default function Documents() {
   const { isAdmin, userRole } = useAuth();
@@ -14,6 +17,16 @@ export default function Documents() {
   const [transactionId, setTransactionId] = useState("");
   const [documentType, setDocumentType] = useState("project"); // "project" or "transaction"
   const [uploading, setUploading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+    type: "danger"
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterProject, setFilterProject] = useState("");
 
   // Debug: Log admin status
   useEffect(() => {
@@ -94,25 +107,25 @@ export default function Documents() {
     e.preventDefault();
 
     if (!file || !title) {
-      alert("Please provide a title and select a file.");
+      setToast({ message: "Please provide a title and select a file.", type: "error" });
       return;
     }
 
     // Validate: either project_id or transaction_id must be provided
     if (documentType === "project" && !projectId) {
-      alert("Please select a project.");
+      setToast({ message: "Please select a project.", type: "error" });
       return;
     }
 
     if (documentType === "transaction" && !transactionId) {
-      alert("Please select a transaction.");
+      setToast({ message: "Please select a transaction.", type: "error" });
       return;
     }
 
     // Validate file size (e.g., max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
     if (file.size > maxSize) {
-      alert(`File size exceeds the maximum limit of 10MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+      setToast({ message: `File size exceeds the maximum limit of 10MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`, type: "error" });
       return;
     }
 
@@ -166,7 +179,7 @@ export default function Documents() {
       await fetchDocuments();
       
       // Show success message
-      alert("Document uploaded successfully!");
+      setToast({ message: "Document uploaded successfully!", type: "success" });
     } catch (err) {
       console.error("❌ Upload error:", err);
       console.error("Error details:", {
@@ -213,23 +226,31 @@ export default function Documents() {
       }
       
       setError(errorMessage);
-      alert(errorMessage);
+      setToast({ message: errorMessage, type: "error" });
     } finally {
       setUploading(false);
     }
   };
 
   // ✅ Handle delete
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this document?")) {
-      try {
-        await API.delete(`/documents/${id}`);
-        fetchDocuments();
-      } catch (err) {
-        console.error("Error deleting document:", err);
-        alert("Failed to delete document.");
+  const handleDelete = (id) => {
+    const document = documents.find(d => d.id === id);
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Document",
+      message: `Are you sure you want to delete "${document?.title || "this document"}"? This action cannot be undone.`,
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/documents/${id}`);
+          await fetchDocuments();
+          setToast({ message: "Document deleted successfully!", type: "success" });
+        } catch (err) {
+          console.error("Error deleting document:", err);
+          setToast({ message: err.response?.data?.message || "Failed to delete document.", type: "error" });
+        }
       }
-    }
+    });
   };
 
   if (loading)
@@ -283,9 +304,87 @@ export default function Documents() {
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
               <span className="text-white font-semibold">Total Documents: {documents.length}</span>
+              {searchTerm || filterProject ? (
+                <span className="text-yellow-200">• Showing {(() => {
+                  const filtered = documents.filter((doc) => {
+                    const matchesSearch = !searchTerm || 
+                      doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      doc.project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      doc.transaction?.description?.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchesProject = !filterProject || doc.project_id?.toString() === filterProject;
+                    return matchesSearch && matchesProject;
+                  });
+                  return filtered.length;
+                })()} result(s)</span>
+              ) : null}
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="mb-6 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
+            <SearchBar
+              placeholder="Search documents by title, project, or transaction..."
+              onSearch={setSearchTerm}
+              value={searchTerm}
+            />
+          </div>
+          <select
+            value={filterProject}
+            onChange={(e) => setFilterProject(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          >
+            <option value="">All Projects</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.title}
+              </option>
+            ))}
+          </select>
+        </div>
+        {(searchTerm || filterProject) && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-gray-600">Active filters:</span>
+            {searchTerm && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                Search: "{searchTerm}"
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="hover:text-blue-900"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            )}
+            {filterProject && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                Project: {projects.find(p => p.id.toString() === filterProject)?.title}
+                <button
+                  onClick={() => setFilterProject("")}
+                  className="hover:text-green-900"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            )}
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setFilterProject("");
+              }}
+              className="text-sm text-gray-600 hover:text-gray-900 underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Upload Section - Admin Only */}
@@ -470,19 +569,37 @@ export default function Documents() {
       )}
 
       {/* Documents Grid */}
-      {documents.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+      {(() => {
+        const filteredDocuments = documents.filter((doc) => {
+          const matchesSearch = !searchTerm || 
+            doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            doc.project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            doc.transaction?.description?.toLowerCase().includes(searchTerm.toLowerCase());
+          
+          const matchesProject = !filterProject || doc.project_id?.toString() === filterProject;
+          
+          return matchesSearch && matchesProject;
+        });
+
+        return filteredDocuments.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {documents.length === 0 ? "No Documents Available" : "No Documents Match Your Search"}
+            </h3>
+            <p className="text-gray-600">
+              {documents.length === 0 
+                ? "There are currently no documents in the system."
+                : "Try adjusting your search or filter criteria."}
+            </p>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Available</h3>
-          <p className="text-gray-600">There are currently no documents in the system.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {documents.map((doc, index) => (
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredDocuments.map((doc, index) => (
             <div
               key={doc.id}
               className="card-modern overflow-hidden animate-scaleIn"
@@ -545,8 +662,28 @@ export default function Documents() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        );
+      })()}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null, type: "danger" })}
+        onConfirm={confirmModal.onConfirm || (() => {})}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+      />
     </div>
   );
 }
