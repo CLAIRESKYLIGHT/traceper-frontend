@@ -9,23 +9,27 @@ import {
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import CitizenDashboard from "./pages/CitizenDashboard";
 import Projects from "./pages/Projects";
 import Barangays from "./pages/Barangays";
 import BarangayDetails from "./pages/BarangayDetails";
 import Officials from "./pages/Officials";
 import Contractors from "./pages/Contractors";
 import Documents from "./pages/Documents";
-import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
 import Transactions from "./pages/Transactions";
+import { getUserRole } from "./utils/useAuth";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [userRole, setUserRole] = useState(localStorage.getItem("user_role"));
 
   // 🔄 Watch for login/logout updates
   useEffect(() => {
     const handleStorageChange = () => {
       setToken(localStorage.getItem("token"));
+      setUserRole(localStorage.getItem("user_role"));
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
@@ -34,7 +38,12 @@ function App() {
   // ✅ React to token updates after login
   useEffect(() => {
     setToken(localStorage.getItem("token"));
+    setUserRole(localStorage.getItem("user_role"));
   }, []);
+
+  // Get user role for routing
+  const role = getUserRole();
+  const isAdmin = role === "admin";
 
   return (
     <Router>
@@ -50,12 +59,30 @@ function App() {
           <Route
             path="/*"
             element={
-              <div className="flex">
-                <Sidebar />
-                <div className="flex-1 bg-gray-100 min-h-screen">
+              <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-yellow-50">
+                <Navbar />
+                <div className="w-full">
                   <Routes>
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    {/* Redirect root to appropriate dashboard */}
+                    <Route
+                      path="/"
+                      element={
+                        <Navigate
+                          to={isAdmin ? "/admin/dashboard" : "/citizen/dashboard"}
+                        />
+                      }
+                    />
+                    {/* Admin Dashboard */}
+                    <Route
+                      path="/admin/dashboard"
+                      element={<AdminDashboard />}
+                    />
+                    {/* Citizen Dashboard */}
+                    <Route
+                      path="/citizen/dashboard"
+                      element={<CitizenDashboard />}
+                    />
+                    {/* Shared routes - accessible by both */}
                     <Route path="/projects" element={<Projects />} />
                     <Route path="/barangays" element={<Barangays />} />
                     <Route
@@ -63,10 +90,21 @@ function App() {
                       element={<BarangayDetails />}
                     />
                     <Route path="/officials" element={<Officials />} />
-                    <Route path="/contractors" element={<Contractors />} />
                     <Route path="/documents" element={<Documents />} />
                     <Route path="/transactions" element={<Transactions />} />
-                    <Route path="*" element={<Navigate to="/dashboard" />} />
+                    {/* Admin-only routes */}
+                    {isAdmin && (
+                      <Route path="/contractors" element={<Contractors />} />
+                    )}
+                    {/* Fallback redirect */}
+                    <Route
+                      path="*"
+                      element={
+                        <Navigate
+                          to={isAdmin ? "/admin/dashboard" : "/citizen/dashboard"}
+                        />
+                      }
+                    />
                   </Routes>
                 </div>
               </div>
