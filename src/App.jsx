@@ -96,10 +96,8 @@ function App() {
                     <Route path="/financials" element={<Financials />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/barangay-ira-shares" element={<BarangayIRAShares />} />
+                    <Route path="/contractors" element={<Contractors />} />
                     {/* Admin-only routes */}
-                    {isAdmin && (
-                      <Route path="/contractors" element={<Contractors />} />
-                    )}
                     {/* Fallback redirect */}
                     <Route
                       path="*"

@@ -4,6 +4,9 @@ import { useAuth } from "../utils/useAuth";
 import Toast from "../components/Toast";
 import ConfirmModal from "../components/ConfirmModal";
 import SearchBar from "../components/SearchBar";
+import RevenueExpenseChart from "../components/charts/RevenueExpenseChart";
+import FinancialChart from "../components/charts/FinancialChart";
+import TransactionTypeChart from "../components/charts/TransactionTypeChart";
 
 export default function Financials() {
   const { isAdmin } = useAuth();
@@ -73,9 +76,15 @@ export default function Financials() {
   const fetchTransactions = async () => {
     try {
       setTransactionLoading(true);
+      setTransactionError("");
       const response = await API.get("/transactions");
+      console.log("Transactions API response:", response.data);
+      
       const transactionsData = response.data?.data || response.data || [];
       const transactionsArray = Array.isArray(transactionsData) ? transactionsData : [];
+      
+      console.log("Processed transactions array:", transactionsArray);
+      console.log("Number of transactions:", transactionsArray.length);
       
       const hasDocumentsInResponse = transactionsArray.some(tx => tx.documents !== undefined);
       
@@ -93,7 +102,13 @@ export default function Financials() {
       }
     } catch (err) {
       console.error("Error fetching transactions:", err);
-      setTransactionError("Failed to load transactions.");
+      console.error("Error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+      setTransactionError(err.response?.data?.message || "Failed to load transactions.");
+      setTransactions([]); // Set empty array on error
     } finally {
       setTransactionLoading(false);
     }
@@ -723,6 +738,14 @@ export default function Financials() {
                   </div>
                 </div>
 
+                {/* Transaction Type Chart */}
+                {transactions.length > 0 && (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Income vs Expenses Breakdown</h3>
+                    <TransactionTypeChart transactions={transactions} />
+                  </div>
+                )}
+
                 {/* Add Transaction Button - Admin Only */}
                 {isAdmin && (
                   <div className="mb-8 flex justify-end">
@@ -802,7 +825,18 @@ export default function Financials() {
 
                 {/* Transactions List */}
                 {(() => {
+                  if (!Array.isArray(transactions)) {
+                    console.error("Transactions is not an array:", transactions);
+                    return (
+                      <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                        <p className="text-red-800 font-medium">Error: Transactions data is invalid</p>
+                      </div>
+                    );
+                  }
+
                   const filteredTransactions = transactions.filter((tx) => {
+                    if (!tx) return false;
+                    
                     const matchesSearch = !searchTerm || 
                       tx.project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       tx.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1012,6 +1046,14 @@ export default function Financials() {
                     </select>
                   </div>
                 </div>
+
+                {/* Financial Trends Chart */}
+                {records.length > 0 && (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Trends Over Years</h3>
+                    <RevenueExpenseChart records={records} />
+                  </div>
+                )}
 
                 {/* Selected Record Details */}
                 {selectedRecord && (
