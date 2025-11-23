@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
 import Toast from "../components/Toast";
 import ConfirmModal from "../components/ConfirmModal";
 import SearchBar from "../components/SearchBar";
+import ProjectStatusChart from "../components/charts/ProjectStatusChart";
 
 const Projects = () => {
   const { isAdmin, userRole } = useAuth();
@@ -56,10 +58,44 @@ const Projects = () => {
     }
   };
 
+  const location = useLocation();
+
   useEffect(() => {
     fetchProjects();
     fetchBarangays();
   }, []);
+
+  // Scroll to project when navigating from dashboard
+  useEffect(() => {
+    if (location.state?.scrollToProject) {
+      const projectId = location.state.scrollToProject;
+      // Wait for projects to load and then scroll
+      setTimeout(() => {
+        const element = document.getElementById(`project-${projectId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight the project briefly
+          element.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2');
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2');
+          }, 2000);
+        }
+      }, 500);
+    } else if (location.hash) {
+      // Handle hash navigation (fallback)
+      const projectId = location.hash.replace('#project-', '');
+      setTimeout(() => {
+        const element = document.getElementById(`project-${projectId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2');
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2');
+          }, 2000);
+        }
+      }, 500);
+    }
+  }, [location, projects]);
 
   const fetchBarangays = async () => {
     try {
@@ -421,6 +457,14 @@ const Projects = () => {
           )}
         </div>
 
+        {/* Project Status Chart */}
+        {projects.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h3>
+            <ProjectStatusChart projects={projects} />
+          </div>
+        )}
+
         {filteredProjects.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -442,7 +486,8 @@ const Projects = () => {
             {filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
+                id={`project-${project.id}`}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 transition-all"
               >
                 {/* Project Header */}
                 <div className="bg-blue-600 px-6 py-5">

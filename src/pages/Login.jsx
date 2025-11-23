@@ -15,24 +15,56 @@ export default function Login() {
     setError("");
 
     try {
+      console.log("Attempting login with:", { email, password: "***" });
       const res = await API.post("/login", { email, password });
+      console.log("Login response:", res.data);
+      
+      if (!res.data.token) {
+        setError("Login failed: No token received from server");
+        return;
+      }
+
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user_name", res.data.user?.name || "User");
+      localStorage.setItem("user_name", res.data.user?.name || res.data.name || "User");
       // Store user role (assuming API returns role as 'admin' or 'citizen')
-      localStorage.setItem("user_role", res.data.user?.role || "citizen");
+      const role = res.data.user?.role || res.data.role || "citizen";
+      localStorage.setItem("user_role", role);
 
       // 🔥 Trigger re-render in App.jsx
       window.dispatchEvent(new Event("storage"));
 
       // Redirect based on role
-      const userRole = res.data.user?.role || "citizen";
-      if (userRole === "admin") {
+      if (role === "admin") {
         navigate("/admin/dashboard");
       } else {
         navigate("/citizen/dashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid credentials");
+      console.error("Login error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+      });
+
+      // More detailed error handling
+      if (err.response) {
+        // Server responded with error
+        const errorData = err.response.data;
+        const errorMessage = 
+          errorData?.message || 
+          errorData?.error || 
+          errorData?.errors?.email?.[0] ||
+          errorData?.errors?.password?.[0] ||
+          `Server error: ${err.response.status} ${err.response.statusText}`;
+        setError(errorMessage);
+      } else if (err.request) {
+        // Request was made but no response received
+        setError("Cannot connect to server. Please check if the backend is running at http://127.0.0.1:8000");
+      } else {
+        // Something else happened
+        setError(err.message || "An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }

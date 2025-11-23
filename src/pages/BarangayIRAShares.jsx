@@ -8,9 +8,10 @@ export default function BarangayIRAShares() {
   const { isAdmin } = useAuth();
   const [iraShares, setIRAShares] = useState([]);
   const [barangays, setBarangays] = useState([]);
+  const [availableYears, setAvailableYears] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     barangay_id: "",
@@ -29,10 +30,57 @@ export default function BarangayIRAShares() {
     type: "danger"
   });
 
+  // Fetch available years and set the most recent one as default
   useEffect(() => {
+    fetchAvailableYears();
     fetchBarangays();
-    fetchIRAShares();
+  }, []);
+
+  // Fetch IRA shares when year is selected
+  useEffect(() => {
+    if (selectedYear !== null) {
+      fetchIRAShares();
+    }
   }, [selectedYear]);
+
+  const fetchAvailableYears = async () => {
+    try {
+      // Fetch all IRA shares to get available years
+      const response = await API.get("/barangay-ira-shares");
+      const allShares = response.data?.data || response.data || [];
+      const sharesArray = Array.isArray(allShares) ? allShares : [];
+      
+      // Extract unique years and sort descending (most recent first)
+      const years = [...new Set(sharesArray.map(share => share.year))].sort((a, b) => b - a);
+      setAvailableYears(years);
+      
+      // Set the most recent year as default
+      if (years.length > 0) {
+        setSelectedYear(years[0]);
+      } else {
+        // If no records, default to current year
+        setSelectedYear(new Date().getFullYear());
+      }
+    } catch (err) {
+      console.error("Error fetching available years:", err);
+      // If API fails, try fetching without year filter to get all records
+      try {
+        const response = await API.get("/barangay-ira-shares");
+        const allShares = response.data?.data || response.data || [];
+        const sharesArray = Array.isArray(allShares) ? allShares : [];
+        const years = [...new Set(sharesArray.map(share => share.year))].sort((a, b) => b - a);
+        setAvailableYears(years);
+        if (years.length > 0) {
+          setSelectedYear(years[0]);
+        } else {
+          setSelectedYear(new Date().getFullYear());
+        }
+      } catch (err2) {
+        console.error("Error in fallback year fetch:", err2);
+        setSelectedYear(new Date().getFullYear());
+      }
+    }
+  };
 
   const fetchBarangays = async () => {
     try {
@@ -45,14 +93,18 @@ export default function BarangayIRAShares() {
   };
 
   const fetchIRAShares = async () => {
+    if (selectedYear === null) return;
+    
     try {
       setLoading(true);
+      setError("");
       const response = await API.get(`/barangay-ira-shares?year=${selectedYear}`);
       const sharesData = response.data?.data || response.data || [];
       setIRAShares(Array.isArray(sharesData) ? sharesData : []);
     } catch (err) {
       console.error("Error fetching IRA shares:", err);
       setError("Failed to load IRA shares.");
+      setIRAShares([]);
     } finally {
       setLoading(false);
     }
@@ -189,15 +241,20 @@ export default function BarangayIRAShares() {
             <div>
               <label className="text-sm font-medium text-gray-700 mr-2">Year:</label>
               <select
-                value={selectedYear}
+                value={selectedYear || ""}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                disabled={loading || availableYears.length === 0}
               >
-                {[2021, 2020, 2019, 2018, 2017, 2016, 2015, 2010].map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
+                {availableYears.length > 0 ? (
+                  availableYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))
+                ) : (
+                  <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                )}
               </select>
             </div>
             {isAdmin && (
@@ -235,7 +292,11 @@ export default function BarangayIRAShares() {
       )}
 
       {/* IRA Shares List */}
-      {iraShares.length === 0 ? (
+      {selectedYear === null ? (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <p className="text-gray-500">Loading available years...</p>
+        </div>
+      ) : iraShares.length === 0 ? (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
           <p className="text-gray-500">No IRA shares found for {selectedYear}.</p>
         </div>

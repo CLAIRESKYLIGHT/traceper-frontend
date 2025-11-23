@@ -33,11 +33,62 @@ export default function Contractors() {
   const fetchContractors = async () => {
     try {
       setLoading(true);
-      const { data } = await API.get("/contractors");
-      setContractors(data);
+      setError("");
+      console.log("📡 Fetching contractors...");
+      
+      const response = await API.get("/contractors");
+      console.log("📦 Raw response:", response);
+      console.log("📦 Response data:", response.data);
+      
+      // Handle different response structures
+      let contractorsData = [];
+      if (response.data) {
+        if (Array.isArray(response.data)) {
+          contractorsData = response.data;
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          contractorsData = response.data.data;
+        } else if (response.data.contractors && Array.isArray(response.data.contractors)) {
+          contractorsData = response.data.contractors;
+        }
+      }
+      
+      console.log("📊 Contractors data extracted:", contractorsData);
+      
+      // Backend now calculates total_received, but ensure it's a number
+      const processedContractors = Array.isArray(contractorsData) 
+        ? contractorsData.map(contractor => ({
+            ...contractor,
+            total_received: parseFloat(contractor.total_received) || 0
+          }))
+        : [];
+      
+      console.log("✅ Processed contractors:", processedContractors);
+      setContractors(processedContractors);
+      
+      if (processedContractors.length === 0) {
+        console.warn("⚠️ No contractors found in response");
+      }
     } catch (err) {
-      console.error("Error fetching contractors:", err);
-      setError("Failed to load contractors.");
+      console.error("❌ Error fetching contractors:", err);
+      console.error("Error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        statusText: err.response?.statusText
+      });
+      
+      let errorMessage = "Failed to load contractors.";
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.status === 401) {
+        errorMessage = "You are not authorized. Please log in again.";
+      } else if (err.response?.status === 403) {
+        errorMessage = "You don't have permission to view contractors.";
+      } else if (!err.response) {
+        errorMessage = "Cannot connect to the server. Please check if the backend is running.";
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
