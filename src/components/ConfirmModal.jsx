@@ -12,15 +12,15 @@ export default function ConfirmModal({
 
   const bgColor = type === "danger" 
     ? "bg-red-50 border-red-200" 
-    : "bg-yellow-50 border-yellow-200";
+    : "bg-gradient-to-r from-yellow-soft to-yellow-pale border-yellow-200";
 
   const iconColor = type === "danger"
     ? "text-red-600"
-    : "text-yellow-600";
+    : "text-yellow-warm";
 
   const buttonColor = type === "danger"
     ? "bg-red-600 hover:bg-red-700"
-    : "bg-yellow-600 hover:bg-yellow-700";
+    : "bg-gradient-to-r from-yellow-warm to-yellow-accent hover:from-yellow-accent hover:to-yellow-warm text-teal-900";
 
   const icon = type === "danger" ? (
     <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,22 +34,22 @@ export default function ConfirmModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scaleIn">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scaleIn border border-teal-100">
         <div className={`${bgColor} border-b-2 p-6 rounded-t-2xl`}>
           <div className="flex items-center gap-4">
             <div className={`flex-shrink-0 ${iconColor}`}>
               {icon}
             </div>
-            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            <h3 className="text-xl font-bold text-teal-900">{title}</h3>
           </div>
         </div>
         <div className="p-6">
           <p className="text-gray-700 leading-relaxed">{message}</p>
         </div>
-        <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+        <div className="flex justify-end gap-3 p-6 border-t border-teal-100">
           <button
             onClick={onClose}
-            className="px-6 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+            className="px-6 py-3 text-gray-700 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors font-semibold border border-teal-200"
           >
             {cancelText}
           </button>
@@ -58,7 +58,7 @@ export default function ConfirmModal({
               onConfirm();
               onClose();
             }}
-            className={`px-6 py-3 text-white ${buttonColor} rounded-lg transition-colors font-semibold shadow-sm`}
+            className={`px-6 py-3 ${buttonColor} rounded-lg transition-all font-semibold shadow-lg hover:shadow-xl`}
           >
             {confirmText}
           </button>

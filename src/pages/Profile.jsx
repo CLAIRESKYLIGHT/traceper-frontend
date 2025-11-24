@@ -121,19 +121,19 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/30">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-              <p className="text-gray-600 mt-1">Manage your account settings and preferences</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">My Profile</h1>
+              <p className="text-teal-600 mt-1 font-medium">Manage your account settings and preferences</p>
             </div>
           </div>
         </div>
@@ -141,10 +141,10 @@ export default function Profile() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Info Card */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 p-6 hover:shadow-xl transition-all duration-300">
               <div className="text-center">
                 <div className="relative inline-block mb-4">
-                  <div className="w-28 h-28 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-4xl shadow-lg mx-auto">
+                  <div className="w-28 h-28 bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 rounded-full flex items-center justify-center text-white font-bold text-4xl shadow-xl shadow-teal-500/40 mx-auto">
                     {userName?.charAt(0).toUpperCase() || "U"}
                   </div>
                   <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
@@ -154,9 +154,9 @@ export default function Profile() {
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">{userName || "User"}</h2>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full mb-6 border border-blue-100">
-                  <span className={`w-2.5 h-2.5 rounded-full ${isAdmin ? "bg-green-500" : "bg-blue-500"} animate-pulse`}></span>
-                  <span className="text-sm font-semibold text-gray-700">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-50 to-blue-100 rounded-full mb-6 border border-teal-200 shadow-sm">
+                  <span className={`w-2.5 h-2.5 rounded-full ${isAdmin ? "bg-green-500" : "bg-teal-500"} animate-pulse`}></span>
+                  <span className="text-sm font-semibold text-teal-700">
                     {isAdmin ? "Administrator" : "Citizen"}
                   </span>
                 </div>
@@ -164,8 +164,8 @@ export default function Profile() {
                 {/* Account Info */}
                 <div className="space-y-3 text-left">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -194,10 +194,10 @@ export default function Profile() {
           {/* Profile Settings */}
           <div className="lg:col-span-2 space-y-6">
             {/* Update Profile Form */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl transition-all duration-300">
+              <div className="px-6 py-4 border-b border-teal-100 bg-gradient-to-r from-teal-50 to-blue-100">
+                <h3 className="text-xl font-bold text-teal-800 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 rounded-lg flex items-center justify-center shadow-md shadow-teal-500/30">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -222,7 +222,7 @@ export default function Profile() {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                       required
                       disabled={submittingProfile}
                       placeholder="Enter your full name"
@@ -245,7 +245,7 @@ export default function Profile() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                       required
                       disabled={submittingProfile}
                       placeholder="Enter your email address"
@@ -256,7 +256,7 @@ export default function Profile() {
                 <div className="flex justify-end pt-4 border-t border-gray-200">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-lg hover:from-teal-700 hover:to-teal-800 transition-all font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/30 hover:shadow-xl"
                     disabled={submittingProfile}
                   >
                     {submittingProfile ? (
@@ -281,10 +281,10 @@ export default function Profile() {
             </div>
 
             {/* Change Password Form */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-red-50">
-                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl transition-all duration-300">
+              <div className="px-6 py-4 border-b border-teal-100 bg-gradient-to-r from-yellow-soft to-yellow-pale">
+                <h3 className="text-xl font-bold text-teal-800 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-warm to-yellow-accent rounded-lg flex items-center justify-center shadow-md">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
@@ -309,7 +309,7 @@ export default function Profile() {
                       name="current_password"
                       value={formData.current_password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                       required
                       disabled={submittingPassword}
                       placeholder="Enter your current password"
@@ -332,7 +332,7 @@ export default function Profile() {
                       name="new_password"
                       value={formData.new_password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                       required
                       minLength={8}
                       disabled={submittingPassword}
@@ -362,7 +362,7 @@ export default function Profile() {
                       name="confirm_password"
                       value={formData.confirm_password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                       required
                       disabled={submittingPassword}
                       placeholder="Confirm your new password"
@@ -373,7 +373,7 @@ export default function Profile() {
                 <div className="flex justify-end pt-4 border-t border-gray-200">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    className="px-6 py-3 bg-gradient-to-r from-yellow-warm to-yellow-accent text-teal-900 rounded-lg hover:from-yellow-accent hover:to-yellow-warm transition-all font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                     disabled={submittingPassword}
                   >
                     {submittingPassword ? (

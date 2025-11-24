@@ -636,7 +636,7 @@ export default function Financials() {
   const remainingRevenue = totalMunicipalRevenue - totalExpense;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-10">
@@ -698,7 +698,7 @@ export default function Financials() {
               <>
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                     <p className="text-sm font-medium text-gray-500 mb-1">Total Municipal Revenue</p>
                     <p className="text-xs text-gray-400 mb-2">({revenueYear} - IRA, Taxes, Services)</p>
                     {totalMunicipalRevenue === 0 && records.length === 0 ? (
@@ -711,14 +711,14 @@ export default function Financials() {
                       </p>
                     )}
                   </div>
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                     <p className="text-sm font-medium text-gray-500 mb-1">Total Expenses</p>
                     <p className="text-xs text-gray-400 mb-2">(From all transactions)</p>
                     <p className="text-2xl font-bold text-red-600">
                       ₱{totalExpense.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                     <p className="text-sm font-medium text-gray-500 mb-1">Remaining Revenue</p>
                     <p className="text-xs text-gray-400 mb-2">(Revenue - Expenses)</p>
                     {totalMunicipalRevenue === 0 ? (
@@ -729,7 +729,7 @@ export default function Financials() {
                       </p>
                     )}
                   </div>
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                     <p className="text-sm font-medium text-gray-500 mb-1">Project Income</p>
                     <p className="text-xs text-gray-400 mb-2">(Income transactions only)</p>
                     <p className="text-2xl font-bold text-green-600">
@@ -740,7 +740,7 @@ export default function Financials() {
 
                 {/* Transaction Type Chart */}
                 {transactions.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6 mb-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Income vs Expenses Breakdown</h3>
                     <TransactionTypeChart transactions={transactions} />
                   </div>
@@ -849,7 +849,7 @@ export default function Financials() {
                   });
 
                   return filteredTransactions.length === 0 ? (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-16 text-center">
                     <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                       <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -867,7 +867,7 @@ export default function Financials() {
                   ) : (
                     <div className="space-y-4">
                       {filteredTransactions.map((tx) => (
-                      <div key={tx.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                      <div key={tx.id} className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6 hover:shadow-md transition-shadow">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-start gap-4">
@@ -1029,7 +1029,7 @@ export default function Financials() {
                 </div>
 
                 {/* Year Filter */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6 mb-8">
                   <div className="flex items-center gap-4">
                     <label className="text-sm font-semibold text-gray-700">View Record by Year:</label>
                     <select
@@ -1049,7 +1049,7 @@ export default function Financials() {
 
                 {/* Financial Trends Chart */}
                 {records.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6 mb-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Trends Over Years</h3>
                     <RevenueExpenseChart records={records} />
                   </div>
@@ -1057,7 +1057,7 @@ export default function Financials() {
 
                 {/* Selected Record Details */}
                 {selectedRecord && (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+                  <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-8 mb-8">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-2xl font-bold text-gray-900">Financial Record - {selectedRecord.year}</h3>
                       {isAdmin && (
@@ -1120,7 +1120,7 @@ export default function Financials() {
                 )}
 
                 {/* Records List */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-6">All Financial Records</h3>
                   {records.length === 0 ? (
                     <p className="text-gray-500 text-center py-12">No financial records found.</p>

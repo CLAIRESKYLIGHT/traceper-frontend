@@ -15,6 +15,7 @@ import Projects from "./pages/Projects";
 import Barangays from "./pages/Barangays";
 import BarangayDetails from "./pages/BarangayDetails";
 import Officials from "./pages/Officials";
+import OfficialDetails from "./pages/OfficialDetails";
 import Contractors from "./pages/Contractors";
 import Documents from "./pages/Documents";
 import Navbar from "./components/Navbar";
@@ -61,9 +62,9 @@ function App() {
           <Route
             path="/*"
             element={
-              <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-yellow-50">
+              <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100">
                 <Navbar />
-                <div className="w-full">
+                <div className="w-full page-transition">
                   <Routes>
                     {/* Redirect root to appropriate dashboard */}
                     <Route
@@ -92,6 +93,7 @@ function App() {
                       element={<BarangayDetails />}
                     />
                     <Route path="/officials" element={<Officials />} />
+                    <Route path="/officials/:id" element={<OfficialDetails />} />
                     <Route path="/documents" element={<Documents />} />
                     <Route path="/financials" element={<Financials />} />
                     <Route path="/profile" element={<Profile />} />

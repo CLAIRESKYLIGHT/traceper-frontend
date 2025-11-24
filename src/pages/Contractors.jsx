@@ -54,12 +54,45 @@ export default function Contractors() {
       
       console.log("📊 Contractors data extracted:", contractorsData);
       
-      // Backend now calculates total_received, but ensure it's a number
+      // Calculate total_received from backend or fallback to calculating from projects/transactions
       const processedContractors = Array.isArray(contractorsData) 
-        ? contractorsData.map(contractor => ({
-            ...contractor,
-            total_received: parseFloat(contractor.total_received) || 0
-          }))
+        ? contractorsData.map(contractor => {
+            let totalReceived = parseFloat(contractor.total_received) || 0;
+            
+            console.log(`💰 Contractor ${contractor.name}: total_received from backend = ${totalReceived}`);
+            
+            // If total_received is 0 or missing, try to calculate from projects
+            if (!totalReceived && contractor.projects && Array.isArray(contractor.projects)) {
+              console.log(`📊 Calculating from ${contractor.projects.length} projects for ${contractor.name}`);
+              
+              totalReceived = contractor.projects.reduce((sum, project) => {
+                // Sum from project transactions if available
+                if (project.transactions && Array.isArray(project.transactions)) {
+                  const projectTotal = project.transactions
+                    .filter(tx => tx.type === 'Expense' || tx.type === 'expense')
+                    .reduce((projectSum, tx) => projectSum + (parseFloat(tx.amount) || 0), 0);
+                  console.log(`  Project ${project.title}: ${project.transactions.length} transactions, total = ${projectTotal}`);
+                  return sum + projectTotal;
+                }
+                // Fallback: if project has amount_spent field
+                if (project.amount_spent) {
+                  const amountSpent = parseFloat(project.amount_spent) || 0;
+                  console.log(`  Project ${project.title}: amount_spent = ${amountSpent}`);
+                  return sum + amountSpent;
+                }
+                return sum;
+              }, 0);
+              
+              console.log(`✅ Calculated total_received for ${contractor.name}: ${totalReceived}`);
+            } else if (!totalReceived) {
+              console.warn(`⚠️ No total_received and no projects data for ${contractor.name}`);
+            }
+            
+            return {
+              ...contractor,
+              total_received: totalReceived
+            };
+          })
         : [];
       
       console.log("✅ Processed contractors:", processedContractors);

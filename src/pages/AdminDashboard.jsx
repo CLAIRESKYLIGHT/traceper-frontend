@@ -10,6 +10,7 @@ import BarangayIRAChart from "../components/charts/BarangayIRAChart";
 import RevenueExpenseChart from "../components/charts/RevenueExpenseChart";
 import MonthlyTransactionChart from "../components/charts/MonthlyTransactionChart";
 import TransactionTypeChart from "../components/charts/TransactionTypeChart";
+import SkeletonLoader from "../components/SkeletonLoader";
 
 export default function AdminDashboard() {
   const { isAdmin } = useAuth();
@@ -183,13 +184,13 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100 p-8">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="animate-pulse">
-            <div className="h-12 bg-gray-200 rounded-lg w-96 mb-4"></div>
+            <div className="h-12 bg-teal-200 rounded-lg w-96 mb-4"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>
+                <div key={i} className="h-40 bg-teal-100 rounded-xl"></div>
               ))}
             </div>
           </div>
@@ -199,14 +200,14 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Administrative Dashboard</h1>
-              <p className="text-lg text-gray-600">Municipal Transparency & Project Management System</p>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-2">Administrative Dashboard</h1>
+              <p className="text-lg text-teal-600 font-medium">Municipal Transparency & Project Management System</p>
             </div>
             <div className="w-full md:w-auto md:max-w-md">
               <GlobalSearch />
@@ -215,58 +216,110 @@ export default function AdminDashboard() {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {statCards.map((card) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {statCards.map((card, index) => (
             <div
               key={card.title}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 hover:shadow-md transition-shadow duration-200"
+              className="card-stat animate-fadeInUp"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="flex items-center justify-between mb-6">
-                <div className={`${card.bgColor} p-4 rounded-xl`}>
-                  <div className={card.iconColor}>{card.icon}</div>
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-teal-500 to-teal-600 p-4 rounded-xl shadow-lg shadow-teal-500/30">
+                    <div className="text-white">{card.icon}</div>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-accent rounded-full border-2 border-white animate-pulse"></div>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">{card.title}</p>
-                <p className="text-4xl font-bold text-gray-900">{card.value.toLocaleString()}</p>
+                <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-3">{card.title}</p>
+                <p className="text-5xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent leading-none mb-2">
+                  {card.value.toLocaleString()}
+                </p>
+                <div className="h-1 w-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full"></div>
               </div>
             </div>
           ))}
         </div>
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Financial Overview */}
         {financials && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Financial Overview ({financials.year})</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <p className="text-sm font-medium text-gray-500 mb-2">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">
+          <div className="mb-16">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                Financial Overview ({financials.year})
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="card-stat group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">Revenue</span>
+                </div>
+                <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Total Revenue</p>
+                <p className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                   ₱{(financials.revenue?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <p className="text-sm font-medium text-gray-500 mb-2">Total Expenditures</p>
-                <p className="text-3xl font-bold text-gray-900">
+              <div className="card-stat group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">Expenses</span>
+                </div>
+                <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Total Expenditures</p>
+                <p className="text-3xl font-extrabold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                   ₱{(financials.expenditures?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <p className="text-sm font-medium text-gray-500 mb-2">Fiscal Balance</p>
-                <p className={`text-3xl font-bold ${financials.fiscal_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="card-stat group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 bg-gradient-to-br ${financials.fiscal_balance >= 0 ? 'from-green-400 to-green-600' : 'from-red-400 to-red-600'} rounded-xl flex items-center justify-center shadow-lg`}>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <span className={`text-xs font-bold px-2 py-1 rounded-full ${financials.fiscal_balance >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
+                    {financials.fiscal_balance >= 0 ? 'Positive' : 'Negative'}
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Fiscal Balance</p>
+                <p className={`text-3xl font-extrabold ${financials.fiscal_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   ₱{(financials.fiscal_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <p className="text-sm font-medium text-gray-500 mb-2">Net Equity</p>
-                <p className="text-3xl font-bold text-gray-900">
+              <div className="card-stat group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded-full">Equity</span>
+                </div>
+                <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Net Equity</p>
+                <p className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">
                   ₱{(financials.assets?.net_equity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
             {/* Revenue vs Expenditures Chart */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue vs Expenditures</h3>
+            <div className="card-modern">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                <h3 className="text-xl font-bold text-teal-800">Revenue vs Expenditures</h3>
+              </div>
               <FinancialChart 
                 revenue={financials.revenue?.total || 0}
                 expenditures={financials.expenditures?.total || 0}
@@ -276,12 +329,20 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Projects Budget Summary */}
         {projectFinancials && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Projects Budget Summary</h2>
+          <div className="mb-16">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                Projects Budget Summary
+              </h2>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-500">Total Budget Allocated</p>
@@ -307,8 +368,11 @@ export default function AdminDashboard() {
                 </div>
               </div>
               {/* Budget Chart */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget Allocation Overview</h3>
+              <div className="card-modern">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Budget Allocation Overview</h3>
+                </div>
                 <BudgetChart
                   allocated={projectFinancials.total_budget_allocated || 0}
                   spent={projectFinancials.total_amount_spent || 0}
@@ -318,50 +382,86 @@ export default function AdminDashboard() {
             </div>
             {/* Project Status Chart */}
             {projects.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h3>
+              <div className="card-modern mt-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Project Status Distribution</h3>
+                </div>
                 <ProjectStatusChart projects={projects} />
               </div>
             )}
           </div>
         )}
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Transaction Trends */}
         {transactions.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Transaction Trends</h2>
+          <div className="mb-16">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                Transaction Trends
+              </h2>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Income vs Expenses</h3>
+              <div className="card-modern">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Monthly Income vs Expenses</h3>
+                </div>
                 <MonthlyTransactionChart transactions={transactions} />
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Type Breakdown</h3>
+              <div className="card-modern">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Transaction Type Breakdown</h3>
+                </div>
                 <TransactionTypeChart transactions={transactions} />
               </div>
             </div>
           </div>
         )}
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Financial Trends Over Years */}
         {financialRecords.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Financial Trends (Multi-Year)</h2>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="mb-16">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                Financial Trends (Multi-Year)
+              </h2>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
               <RevenueExpenseChart records={financialRecords} />
             </div>
           </div>
         )}
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Recent Activity */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+        <div className="mb-16">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+            <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+              Recent Activity
+            </h2>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Projects */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Recent Projects</h3>
-                <Link to="/projects" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <div className="card-modern">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Recent Projects</h3>
+                </div>
+                <Link to="/projects" className="text-sm text-teal-600 hover:text-teal-700 font-medium">
                   View All →
                 </Link>
               </div>
@@ -396,10 +496,13 @@ export default function AdminDashboard() {
             </div>
 
             {/* Recent Transactions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
-                <Link to="/financials" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <div className="card-modern">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Recent Transactions</h3>
+                </div>
+                <Link to="/financials" className="text-sm text-teal-600 hover:text-teal-700 font-medium">
                   View All →
                 </Link>
               </div>
@@ -430,19 +533,27 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Barangays List */}
         {barangays.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Barangays</h2>
+          <div className="mb-16">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+                <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                  Barangays
+                </h2>
+              </div>
               <Link 
                 to="/barangays" 
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
+                className="text-sm text-teal-600 hover:text-teal-700 font-medium inline-flex items-center gap-1"
               >
                 View All Barangays →
               </Link>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {barangays.slice(0, 6).map((barangay) => (
                   <div key={barangay.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group">
@@ -454,7 +565,7 @@ export default function AdminDashboard() {
                       </div>
                       <Link 
                         to={`/barangays/${barangay.id}`}
-                        className="font-medium text-gray-900 hover:text-blue-600 transition-colors truncate flex-1"
+                        className="font-medium text-gray-900 hover:text-teal-600 transition-colors truncate flex-1"
                       >
                         {barangay.name}
                       </Link>
@@ -466,7 +577,7 @@ export default function AdminDashboard() {
                           e.stopPropagation();
                           navigate(`/barangays/${barangay.id}`);
                         }}
-                        className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-lg transition-all border border-blue-200 hover:border-blue-600 flex-shrink-0 ml-2"
+                        className="p-2 text-teal-600 hover:text-white hover:bg-teal-600 rounded-lg transition-all border border-teal-200 hover:border-teal-600 flex-shrink-0 ml-2"
                         title="View/Edit Barangay"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -482,38 +593,46 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Section Divider */}
+        <div className="section-divider mb-16"></div>
+
         {/* Top Barangay IRA Shares */}
         {barangayIRAShares.length > 0 && (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Top Barangay IRA Shares</h2>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+                <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                  Top Barangay IRA Shares
+                </h2>
+              </div>
               {isAdmin && (
                 <Link 
                   to="/barangay-ira-shares" 
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
+                  className="text-sm text-teal-600 hover:text-teal-700 font-medium inline-flex items-center gap-1"
                 >
                   Manage IRA Shares →
                 </Link>
               )}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-8">
                 <div className="space-y-4">
                   {barangayIRAShares.slice(0, 10).map((barangay, index) => (
                     <div key={barangay.barangay_id} className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0 group hover:bg-gray-50 transition-colors rounded-lg px-2 -mx-2">
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0 shadow-md shadow-teal-500/30">
                           {index + 1}
                         </div>
                         <Link 
                           to={`/barangays/${barangay.barangay_id}`}
-                          className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors truncate flex-1"
+                          className="text-lg font-medium text-gray-900 hover:text-teal-600 transition-colors truncate flex-1"
                         >
                           {barangay.barangay_name}
                         </Link>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-lg font-bold text-blue-600 whitespace-nowrap">
+                        <span className="text-lg font-bold text-teal-600 whitespace-nowrap">
                           ₱{(barangay.ira_share || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                         {isAdmin && (
@@ -523,7 +642,7 @@ export default function AdminDashboard() {
                               e.stopPropagation();
                               navigate('/barangay-ira-shares');
                             }}
-                            className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-lg transition-all border border-blue-200 hover:border-blue-600 flex-shrink-0"
+                            className="p-2 text-teal-600 hover:text-white hover:bg-teal-600 rounded-lg transition-all border border-teal-200 hover:border-teal-600 flex-shrink-0"
                             title="Edit IRA Share"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,8 +656,11 @@ export default function AdminDashboard() {
                 </div>
               </div>
               {/* Barangay IRA Chart */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Barangay IRA Shares Comparison</h3>
+              <div className="card-modern">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-1 h-8 bg-gradient-to-b from-teal-500 to-teal-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-teal-800">Top 10 Barangay IRA Shares Comparison</h3>
+                </div>
                 <BarangayIRAChart barangays={barangayIRAShares} />
               </div>
             </div>

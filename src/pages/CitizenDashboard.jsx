@@ -175,13 +175,13 @@ export default function CitizenDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100 p-8">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="animate-pulse">
-            <div className="h-12 bg-gray-200 rounded-lg w-96 mb-4"></div>
+            <div className="h-12 bg-teal-200 rounded-lg w-96 mb-4"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>
+                <div key={i} className="h-40 bg-teal-100 rounded-xl"></div>
               ))}
             </div>
           </div>
@@ -191,14 +191,14 @@ export default function CitizenDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Administrative Dashboard</h1>
-              <p className="text-lg text-gray-600">Municipal Transparency & Project Management System</p>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-2">Administrative Dashboard</h1>
+              <p className="text-lg text-teal-600 font-medium">Municipal Transparency & Project Management System</p>
             </div>
             <div className="w-full md:w-auto md:max-w-md">
               <GlobalSearch />
@@ -211,16 +211,16 @@ export default function CitizenDashboard() {
           {statCards.map((card) => (
             <div
               key={card.title}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 hover:shadow-md transition-shadow duration-200"
+              className="bg-white rounded-2xl shadow-lg border border-teal-100 p-8 hover:shadow-xl hover:border-teal-300 transition-all duration-300 hover:-translate-y-1"
             >
               <div className="flex items-center justify-between mb-6">
-                <div className={`${card.bgColor} p-4 rounded-xl`}>
-                  <div className={card.iconColor}>{card.icon}</div>
+                <div className={`bg-gradient-to-br from-teal-500 to-teal-600 p-4 rounded-xl shadow-md shadow-teal-500/30`}>
+                  <div className="text-white">{card.icon}</div>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">{card.title}</p>
-                <p className="text-4xl font-bold text-gray-900">{card.value.toLocaleString()}</p>
+                <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mb-2">{card.title}</p>
+                <p className="text-4xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">{card.value.toLocaleString()}</p>
               </div>
             </div>
           ))}
@@ -229,27 +229,27 @@ export default function CitizenDashboard() {
         {/* Financial Overview */}
         {currentYearFinancials && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Financial Overview ({currentYearFinancials.year})</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-6">Financial Overview ({currentYearFinancials.year})</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                 <p className="text-sm font-medium text-gray-500 mb-2">Total Revenue</p>
                 <p className="text-3xl font-bold text-gray-900">
                   ₱{(currentYearFinancials.total_revenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                 <p className="text-sm font-medium text-gray-500 mb-2">Total Expenditures</p>
                 <p className="text-3xl font-bold text-gray-900">
                   ₱{(currentYearFinancials.total_expenditures || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                 <p className="text-sm font-medium text-gray-500 mb-2">Fiscal Balance</p>
                 <p className={`text-3xl font-bold ${currentYearFinancials.fiscal_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   ₱{(currentYearFinancials.fiscal_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                 <p className="text-sm font-medium text-gray-500 mb-2">Net Equity</p>
                 <p className="text-3xl font-bold text-gray-900">
                   ₱{(currentYearFinancials.assets?.net_equity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -257,8 +257,8 @@ export default function CitizenDashboard() {
               </div>
             </div>
             {/* Revenue vs Expenditures Chart */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue vs Expenditures</h3>
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
+              <h3 className="text-lg font-semibold text-teal-700 mb-4">Revenue vs Expenditures</h3>
               <FinancialChart 
                 revenue={currentYearFinancials.total_revenue || 0}
                 expenditures={currentYearFinancials.total_expenditures || 0}
@@ -271,9 +271,9 @@ export default function CitizenDashboard() {
         {/* Projects Budget Summary */}
         {projectFinancials && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Projects Budget Summary</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-6">Projects Budget Summary</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-500">Total Budget Allocated</p>
@@ -299,8 +299,8 @@ export default function CitizenDashboard() {
                 </div>
               </div>
               {/* Budget Chart */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget Allocation Overview</h3>
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
+                <h3 className="text-lg font-semibold text-teal-700 mb-4">Budget Allocation Overview</h3>
                 <BudgetChart
                   allocated={projectFinancials.total_budget_allocated || 0}
                   spent={projectFinancials.total_amount_spent || 0}
@@ -310,8 +310,8 @@ export default function CitizenDashboard() {
             </div>
             {/* Project Status Chart */}
             {projects.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h3>
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
+                <h3 className="text-lg font-semibold text-teal-700 mb-4">Project Status Distribution</h3>
                 <ProjectStatusChart projects={projects} />
               </div>
             )}
@@ -321,14 +321,14 @@ export default function CitizenDashboard() {
         {/* Transaction Trends */}
         {transactions.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Transaction Trends</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-6">Transaction Trends</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Income vs Expenses</h3>
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
+                <h3 className="text-lg font-semibold text-teal-700 mb-4">Monthly Income vs Expenses</h3>
                 <MonthlyTransactionChart transactions={transactions} />
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Type Breakdown</h3>
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
+                <h3 className="text-lg font-semibold text-teal-700 mb-4">Transaction Type Breakdown</h3>
                 <TransactionTypeChart transactions={transactions} />
               </div>
             </div>
@@ -338,8 +338,8 @@ export default function CitizenDashboard() {
         {/* Financial Trends Over Years */}
         {financialRecords.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Financial Trends (Multi-Year)</h2>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-6">Financial Trends (Multi-Year)</h2>
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
               <RevenueExpenseChart records={financialRecords} />
             </div>
           </div>
@@ -349,15 +349,15 @@ export default function CitizenDashboard() {
         {barangays.length > 0 && (
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Barangays</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">Barangays</h2>
               <Link 
                 to="/barangays" 
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
+                className="text-sm text-teal-600 hover:text-teal-700 font-medium inline-flex items-center gap-1"
               >
                 View All Barangays →
               </Link>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {barangays.slice(0, 6).map((barangay) => (
                   <Link
@@ -365,12 +365,12 @@ export default function CitizenDashboard() {
                     to={`/barangays/${barangay.id}`}
                     className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group"
                   >
-                    <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0">
+                    <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0 shadow-md shadow-teal-500/30">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
                     </div>
-                    <span className="font-medium text-gray-900 hover:text-blue-600 transition-colors truncate flex-1">
+                    <span className="font-medium text-gray-900 hover:text-teal-600 transition-colors truncate flex-1">
                       {barangay.name}
                     </span>
                   </Link>
@@ -383,24 +383,24 @@ export default function CitizenDashboard() {
         {/* Top Barangay IRA Shares */}
         {barangayIRAShares.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Top Barangay IRA Shares</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-6">Top Barangay IRA Shares</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-8">
                 <div className="space-y-4">
                   {barangayIRAShares.slice(0, 10).map((barangay, index) => (
                     <div key={barangay.barangay_id} className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
+                        <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-lg flex items-center justify-center font-bold shadow-md shadow-teal-500/30">
                           {index + 1}
                         </div>
                         <Link 
                           to={`/barangays/${barangay.barangay_id}`}
-                          className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                          className="text-lg font-medium text-gray-900 hover:text-teal-600 transition-colors"
                         >
                           {barangay.barangay_name}
                         </Link>
                       </div>
-                      <span className="text-lg font-bold text-blue-600">
+                      <span className="text-lg font-bold text-teal-600">
                         ₱{(barangay.ira_share || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -408,8 +408,8 @@ export default function CitizenDashboard() {
                 </div>
               </div>
               {/* Barangay IRA Chart */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Barangay IRA Shares Comparison</h3>
+              <div className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6">
+                <h3 className="text-lg font-semibold text-teal-700 mb-4">Top 10 Barangay IRA Shares Comparison</h3>
                 <BarangayIRAChart barangays={barangayIRAShares} />
               </div>
             </div>
@@ -420,8 +420,8 @@ export default function CitizenDashboard() {
         {recentProjects.length > 0 && (
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Recent Projects</h2>
-              <Link to="/projects" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">Recent Projects</h2>
+              <Link to="/projects" className="text-sm text-teal-600 hover:text-teal-700 font-medium">
                 View All Projects →
               </Link>
             </div>
@@ -431,7 +431,7 @@ export default function CitizenDashboard() {
                   key={project.id}
                   to={`/projects#project-${project.id}`}
                   state={{ scrollToProject: project.id }}
-                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200"
+                  className="bg-white rounded-2xl shadow-lg border border-teal-100 hover:shadow-xl hover:border-teal-300 transition-all duration-300 p-6 hover:shadow-md transition-shadow duration-200"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="font-bold text-lg text-gray-900 line-clamp-2 flex-1">{project.title}</h3>
@@ -455,18 +455,18 @@ export default function CitizenDashboard() {
         )}
 
         {/* Transparency Notice */}
-        <div className="bg-blue-50 border-l-4 border-blue-600 rounded-lg p-6">
+        <div className="bg-gradient-to-r from-teal-50 to-blue-100 border-l-4 border-teal-600 rounded-xl p-6 shadow-lg">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 rounded-lg flex items-center justify-center shadow-md shadow-teal-500/30">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
             <div className="flex-1">
-              <h3 className="text-blue-900 font-bold text-lg mb-1">Transparency & Accountability</h3>
-              <p className="text-blue-800 text-sm leading-relaxed">
+              <h3 className="text-teal-900 font-bold text-lg mb-1">Transparency & Accountability</h3>
+              <p className="text-teal-800 text-sm leading-relaxed">
                 This portal provides public access to municipal information, project data, and official documents. 
                 All information displayed is publicly available and updated regularly to ensure transparency in government operations.
               </p>

@@ -71,10 +71,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-blue-900 via-blue-700 to-yellow-400 relative overflow-hidden">
+    <div className="min-h-screen flex bg-gradient-to-br from-teal-900 via-teal-700 via-teal-600 to-teal-500 relative overflow-hidden">
       {/* Floating Gradients */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-yellow-400/30 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-20 w-80 h-80 bg-blue-400/30 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      <div className="absolute top-20 left-20 w-72 h-72 bg-yellow-accent/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-20 w-80 h-80 bg-blue-teal/30 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-300/10 rounded-full blur-3xl"></div>
 
       {/* Centered Card */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 relative z-10">
@@ -82,11 +83,14 @@ export default function Login() {
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-2xl font-bold text-blue-900">T</span>
+              <div className="relative w-14 h-14 bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 rounded-2xl flex items-center justify-center shadow-xl shadow-teal-500/40">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-accent/30 to-transparent rounded-2xl"></div>
+                <svg className="w-7 h-7 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-blue-900 bg-clip-text text-transparent">
-                TracePer
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                Matnog Portal
               </h1>
             </div>
           </div>
@@ -136,7 +140,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 placeholder="name@example.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 transition-all duration-300"
+                className="w-full px-4 py-3 border border-teal-200 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-600 transition-all duration-300 bg-white/90"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -154,7 +158,7 @@ export default function Login() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 transition-all duration-300"
+                className="w-full px-4 py-3 border border-teal-200 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-600 transition-all duration-300 bg-white/90"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -165,13 +169,13 @@ export default function Login() {
               <label className="flex items-center gap-2 text-gray-600">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-0"
+                  className="w-4 h-4 text-teal-600 rounded focus:ring-0"
                 />
                 Remember me
               </label>
               <Link
                 to="/forgot-password"
-                className="text-blue-600 hover:text-blue-700 font-semibold transition"
+                className="text-teal-600 hover:text-teal-700 font-semibold transition"
               >
                 Forgot password?
               </Link>
@@ -181,7 +185,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+              className="w-full bg-gradient-to-r from-teal-600 via-teal-700 to-teal-800 text-white py-3 rounded-xl font-semibold shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
             >
               {loading ? (
                 <div className="flex justify-center items-center gap-2">
@@ -204,7 +208,7 @@ export default function Login() {
           {/* Register */}
           <Link
             to="/register"
-            className="w-full inline-flex justify-center items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+            className="w-full inline-flex justify-center items-center gap-2 bg-gradient-to-r from-yellow-warm to-yellow-accent hover:from-yellow-accent hover:to-yellow-warm text-teal-900 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
           >
             Create an Account 🎉
           </Link>
@@ -220,7 +224,7 @@ export default function Login() {
         >
           <path
             d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-            className="fill-blue-800/40"
+            className="fill-teal-800/40"
           ></path>
         </svg>
       </div>

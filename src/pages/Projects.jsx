@@ -6,6 +6,8 @@ import Toast from "../components/Toast";
 import ConfirmModal from "../components/ConfirmModal";
 import SearchBar from "../components/SearchBar";
 import ProjectStatusChart from "../components/charts/ProjectStatusChart";
+import EmptyState from "../components/EmptyState";
+import SkeletonLoader from "../components/SkeletonLoader";
 
 const Projects = () => {
   const { isAdmin, userRole } = useAuth();
@@ -75,9 +77,9 @@ const Projects = () => {
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           // Highlight the project briefly
-          element.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2');
+          element.classList.add('ring-4', 'ring-teal-500', 'ring-offset-2');
           setTimeout(() => {
-            element.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2');
+            element.classList.remove('ring-4', 'ring-teal-500', 'ring-offset-2');
           }, 2000);
         }
       }, 500);
@@ -88,9 +90,9 @@ const Projects = () => {
         const element = document.getElementById(`project-${projectId}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2');
+          element.classList.add('ring-4', 'ring-teal-500', 'ring-offset-2');
           setTimeout(() => {
-            element.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2');
+            element.classList.remove('ring-4', 'ring-teal-500', 'ring-offset-2');
           }, 2000);
         }
       }, 500);
@@ -291,14 +293,9 @@ const Projects = () => {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-64"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-gray-200 h-48 rounded-lg"></div>
-            ))}
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100 p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <SkeletonLoader type="card" count={6} />
         </div>
       </div>
     );
@@ -334,19 +331,24 @@ const Projects = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-100 page-transition">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Public Projects</h1>
-              <p className="text-lg text-gray-600">Municipal infrastructure and development projects</p>
+              <div className="flex items-center gap-4 mb-3">
+                <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+                <h1 className="text-5xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                  Public Projects
+                </h1>
+              </div>
+              <p className="text-lg text-teal-700 font-medium ml-20">Municipal infrastructure and development projects</p>
             </div>
             {isAdmin && (
               <button
                 onClick={() => openModal()}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+                className="btn-primary-modern inline-flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -355,11 +357,18 @@ const Projects = () => {
               </button>
             )}
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Total Projects: <strong className="text-gray-900">{projects.length}</strong></span>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-md border border-teal-100">
+              <div className="w-3 h-3 bg-gradient-to-br from-green-400 to-green-600 rounded-full animate-pulse"></div>
+              <span className="font-semibold text-gray-900">Total Projects: <span className="text-teal-700">{projects.length}</span></span>
+            </div>
             {searchTerm || filterStatus || filterBarangay ? (
-              <span className="text-blue-600">• Showing {filteredProjects.length} result(s)</span>
+              <div className="flex items-center gap-2 px-4 py-2 bg-teal-50 rounded-xl border border-teal-200">
+                <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="font-medium text-teal-700">Showing {filteredProjects.length} result(s)</span>
+              </div>
             ) : null}
           </div>
         </div>
@@ -378,7 +387,7 @@ const Projects = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900"
               >
                 <option value="">All Status</option>
                 <option value="Not Started">Not Started</option>
@@ -390,7 +399,7 @@ const Projects = () => {
               <select
                 value={filterBarangay}
                 onChange={(e) => setFilterBarangay(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900"
               >
                 <option value="">All Barangays</option>
                 {barangays.map((barangay) => (
@@ -466,20 +475,20 @@ const Projects = () => {
         )}
 
         {filteredProjects.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {projects.length === 0 ? "No Projects Available" : "No Projects Match Your Search"}
-            </h3>
-            <p className="text-gray-600">
-              {projects.length === 0 
-                ? "There are currently no projects registered in the system."
-                : "Try adjusting your search or filter criteria."}
-            </p>
+          <div className="card-modern">
+            <EmptyState
+              icon={
+                <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              }
+              title={projects.length === 0 ? "No Projects Available" : "No Projects Match Your Search"}
+              description={projects.length === 0 
+                ? "There are currently no projects registered in the system. Start by adding your first project to track municipal infrastructure and development initiatives."
+                : "Try adjusting your search or filter criteria to find what you're looking for."}
+              actionLabel={isAdmin && projects.length === 0 ? "Add First Project" : undefined}
+              onAction={isAdmin && projects.length === 0 ? () => openModal() : undefined}
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -490,7 +499,7 @@ const Projects = () => {
                 className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 transition-all"
               >
                 {/* Project Header */}
-                <div className="bg-blue-600 px-6 py-5">
+                <div className="bg-gradient-to-r from-teal-600 to-teal-700 px-6 py-5">
                   <div className="flex items-start justify-between gap-4">
                     <h3 className="font-bold text-xl text-white line-clamp-2 flex-1">{project.title}</h3>
                     {isAdmin && (
@@ -684,7 +693,7 @@ const Projects = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900"
                   required
                   disabled={submitting}
                 />
@@ -699,7 +708,7 @@ const Projects = () => {
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                     disabled={submitting}
                   >
                     <option value="">Select Status</option>
@@ -722,7 +731,7 @@ const Projects = () => {
                     onChange={handleChange}
                     step="0.01"
                     min="0"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                     disabled={submitting}
                   />
                 </div>
@@ -739,7 +748,7 @@ const Projects = () => {
                     value={formData.barangay_id}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                     disabled={submitting}
                     placeholder="Optional"
                   />
@@ -755,7 +764,7 @@ const Projects = () => {
                     value={formData.contractor_id}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                     disabled={submitting}
                     placeholder="Optional"
                   />
@@ -773,7 +782,7 @@ const Projects = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-sm"
+                  className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-lg hover:from-teal-700 hover:to-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-sm"
                   disabled={submitting}
                 >
                   {submitting ? (
