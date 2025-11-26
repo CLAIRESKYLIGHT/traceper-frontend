@@ -22,6 +22,7 @@ import Navbar from "./components/Navbar";
 import Financials from "./pages/Financials";
 import Profile from "./pages/Profile";
 import BarangayIRAShares from "./pages/BarangayIRAShares";
+import Map from "./pages/Map";
 import { getUserRole } from "./utils/useAuth";
 
 function App() {
@@ -99,6 +100,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/barangay-ira-shares" element={<BarangayIRAShares />} />
                     <Route path="/contractors" element={<Contractors />} />
+                    <Route path="/map" element={<Map />} />
                     {/* Admin-only routes */}
                     {/* Fallback redirect */}
                     <Route

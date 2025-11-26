@@ -109,76 +109,44 @@ export default function AdminDashboard() {
     {
       title: "Projects",
       value: stats.projects,
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-8H7v8M7 3v5h8" />
-        </svg>
-      ),
+      path: "/projects",
+      description: "Manage and track projects",
       color: "blue",
-      bgColor: "bg-blue-50",
-      iconColor: "text-blue-600",
     },
     {
       title: "Barangays",
       value: stats.barangays,
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      ),
+      path: "/barangays",
+      description: "View barangay information",
       color: "green",
-      bgColor: "bg-green-50",
-      iconColor: "text-green-600",
     },
     {
       title: "Contractors",
       value: stats.contractors,
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      ),
+      path: "/contractors",
+      description: "Manage contractors",
       color: "yellow",
-      bgColor: "bg-yellow-50",
-      iconColor: "text-yellow-600",
     },
     {
       title: "Officials",
       value: stats.officials,
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      ),
+      path: "/officials",
+      description: "Government officials",
       color: "purple",
-      bgColor: "bg-purple-50",
-      iconColor: "text-purple-600",
     },
     {
       title: "Transactions",
       value: stats.transactions,
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+      path: "/financials",
+      description: "Financial records",
       color: "indigo",
-      bgColor: "bg-indigo-50",
-      iconColor: "text-indigo-600",
     },
     {
       title: "Documents",
       value: stats.documents,
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
+      path: "/documents",
+      description: "Public documents",
       color: "gray",
-      bgColor: "bg-gray-50",
-      iconColor: "text-gray-600",
     },
   ];
 
@@ -206,7 +174,7 @@ export default function AdminDashboard() {
         <div className="mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-2">Administrative Dashboard</h1>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent mb-2">Administrative Dashboard</h1>
               <p className="text-lg text-teal-600 font-medium">Municipal Transparency & Project Management System</p>
             </div>
             <div className="w-full md:w-auto md:max-w-md">
@@ -218,28 +186,66 @@ export default function AdminDashboard() {
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {statCards.map((card, index) => (
-            <div
+            <Link
               key={card.title}
-              className="card-stat animate-fadeInUp"
+              to={card.path}
+              className="card-stat animate-fadeInUp group cursor-pointer"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-teal-500 to-teal-600 p-4 rounded-xl shadow-lg shadow-teal-500/30">
-                    <div className="text-white">{card.icon}</div>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-accent rounded-full border-2 border-white animate-pulse"></div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-teal-700 transition-colors">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-gray-500">{card.description}</p>
+                </div>
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-4xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent leading-none mb-2">
+                    {card.value.toLocaleString()}
+                  </p>
+                  <div className="h-1 w-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full"></div>
+                </div>
+                <div className="flex items-center text-teal-600 text-sm font-medium mt-4">
+                  <span>Manage</span>
+                  <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
               </div>
-              <div>
-                <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-3">{card.title}</p>
-                <p className="text-5xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent leading-none mb-2">
-                  {card.value.toLocaleString()}
-                </p>
-                <div className="h-1 w-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full"></div>
-              </div>
-            </div>
+            </Link>
           ))}
+        </div>
+
+        {/* Map Section */}
+        <div className="mb-16">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
+            <div className="flex items-center justify-between flex-1">
+              <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                Matnog Municipality Map
+              </h2>
+              <Link 
+                to="/map" 
+                className="text-sm text-teal-600 hover:text-teal-700 font-medium inline-flex items-center gap-1"
+              >
+                View Full Map →
+              </Link>
+            </div>
+          </div>
+          <div className="card-modern">
+            <div className="relative" style={{ height: "400px" }}>
+              <iframe
+                src="https://www.google.com/maps?q=Matnog,+Sorsogon&z=12&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Matnog Municipality - Google Maps"
+              ></iframe>
+            </div>
+          </div>
         </div>
 
         {/* Section Divider */}
@@ -250,7 +256,7 @@ export default function AdminDashboard() {
           <div className="mb-16">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
-              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
                 Financial Overview ({financials.year})
               </h2>
             </div>
@@ -265,7 +271,7 @@ export default function AdminDashboard() {
                   <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">Revenue</span>
                 </div>
                 <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Total Revenue</p>
-                <p className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+                <p className="text-2xl font-extrabold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                   ₱{(financials.revenue?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -279,7 +285,7 @@ export default function AdminDashboard() {
                   <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">Expenses</span>
                 </div>
                 <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Total Expenditures</p>
-                <p className="text-3xl font-extrabold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+                <p className="text-2xl font-extrabold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                   ₱{(financials.expenditures?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -295,7 +301,7 @@ export default function AdminDashboard() {
                   </span>
                 </div>
                 <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Fiscal Balance</p>
-                <p className={`text-3xl font-extrabold ${financials.fiscal_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-2xl font-extrabold ${financials.fiscal_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   ₱{(financials.fiscal_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -309,7 +315,7 @@ export default function AdminDashboard() {
                   <span className="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded-full">Equity</span>
                 </div>
                 <p className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Net Equity</p>
-                <p className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">
+                <p className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 to-teal-800 bg-clip-text text-transparent">
                   ₱{(financials.assets?.net_equity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -337,7 +343,7 @@ export default function AdminDashboard() {
           <div className="mb-16">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
-              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
                 Projects Budget Summary
               </h2>
             </div>
@@ -346,21 +352,21 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-500">Total Budget Allocated</p>
-                    <p className="text-2xl font-bold text-gray-900 break-words">
+                    <p className="text-xl font-bold text-gray-900 break-words">
                       ₱{(projectFinancials.total_budget_allocated || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                     <p className="text-xs text-gray-400">Across all projects</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-500">Total Amount Spent</p>
-                    <p className="text-2xl font-bold text-orange-600 break-words">
+                    <p className="text-xl font-bold text-orange-600 break-words">
                       ₱{(projectFinancials.total_amount_spent || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                     <p className="text-xs text-gray-400">From all project transactions</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-500">Total Remaining Budget</p>
-                    <p className="text-2xl font-bold text-green-600 break-words">
+                    <p className="text-xl font-bold text-green-600 break-words">
                       ₱{(projectFinancials.total_remaining_budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                     <p className="text-xs text-gray-400">Available for projects</p>
@@ -401,7 +407,7 @@ export default function AdminDashboard() {
           <div className="mb-16">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
-              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
                 Transaction Trends
               </h2>
             </div>
@@ -432,7 +438,7 @@ export default function AdminDashboard() {
           <div className="mb-16">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
-              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
                 Financial Trends (Multi-Year)
               </h2>
             </div>
@@ -542,7 +548,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                 <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
-                <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
                   Barangays
                 </h2>
               </div>
@@ -602,7 +608,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                 <div className="h-1 w-16 bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"></div>
-                <h2 className="text-3xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-extrabold bg-gradient-to-r from-teal-700 via-teal-800 to-teal-900 bg-clip-text text-transparent">
                   Top Barangay IRA Shares
                 </h2>
               </div>
