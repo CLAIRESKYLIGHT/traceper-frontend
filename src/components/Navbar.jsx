@@ -100,7 +100,7 @@ const Navbar = () => {
                 to={item.path}
                 className={`
                   relative px-3 py-1.5 rounded-lg font-medium text-xs transition-all duration-200
-                  whitespace-nowrap flex-shrink-0
+                  whitespace-nowrap flex-shrink-0 flex items-center justify-center
                   ${
                     isActiveRoute(item.path)
                       ? "bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-md shadow-teal-500/30"
@@ -199,7 +199,7 @@ const Navbar = () => {
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
                   className={`
-                    block px-4 py-3 rounded-lg font-semibold text-sm transition-colors
+                    flex items-center justify-center px-4 py-3 rounded-lg font-semibold text-sm transition-colors
                     ${
                       isActiveRoute(item.path)
                         ? "bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-md"

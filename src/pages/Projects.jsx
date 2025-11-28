@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
 import Toast from "../components/Toast";
@@ -11,6 +11,7 @@ import SkeletonLoader from "../components/SkeletonLoader";
 
 const Projects = () => {
   const { isAdmin, userRole } = useAuth();
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -174,6 +175,27 @@ const Projects = () => {
         ? parseInt(formData.contractor_id) 
         : null,
     };
+
+    // If status is "Completed", set amount_spent to budget_allocated (remaining budget becomes 0)
+    // Apply this when:
+    // 1. Editing an existing project and status is being set/changed to "Completed"
+    // 2. Editing a project that is already "Completed" and budget is being updated
+    if (editingProject) {
+      const isStatusCompleted = submitData.status === "Completed" || 
+                                (submitData.status === null && editingProject.status === "Completed");
+      
+      if (isStatusCompleted) {
+        const budgetAllocated = submitData.budget_allocated || editingProject.budget_allocated;
+        if (budgetAllocated) {
+          submitData.amount_spent = budgetAllocated;
+        }
+      }
+    } else if (submitData.status === "Completed") {
+      // New project created with "Completed" status
+      if (submitData.budget_allocated) {
+        submitData.amount_spent = submitData.budget_allocated;
+      }
+    }
 
     // Validate numeric fields
     if (formData.budget_allocated && (isNaN(parseFloat(formData.budget_allocated)) || parseFloat(formData.budget_allocated) < 0)) {
@@ -612,23 +634,40 @@ const Projects = () => {
                       </div>
                     )}
 
-                    {/* Documents & Transactions Count */}
+                    {/* Documents & Transactions */}
                     {(project.documents?.length > 0 || project.transactions?.length > 0) && (
-                      <div className="flex items-center gap-6 pt-4 border-t border-gray-100 text-sm text-gray-600">
+                      <div className="pt-4 border-t border-gray-100">
                         {project.documents?.length > 0 && (
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span className="font-medium">{project.documents.length} document{project.documents.length !== 1 ? 's' : ''}</span>
+                          <div className="mb-4">
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Documents ({project.documents.length})</p>
+                            <div className="space-y-2">
+                              {project.documents.map((doc) => (
+                                <button
+                                  key={doc.id}
+                                  onClick={() => navigate(`/documents`, { state: { scrollToDocument: doc.id, filterProject: project.id } })}
+                                  className="w-full text-left flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors group"
+                                >
+                                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm font-medium truncate flex-1">{doc.title || `Document ${doc.id}`}</span>
+                                  <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         )}
                         {project.transactions?.length > 0 && (
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                            <span className="font-medium">{project.transactions.length} transaction{project.transactions.length !== 1 ? 's' : ''}</span>
+                          <div>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Transactions ({project.transactions.length})</p>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                              </svg>
+                              <span className="font-medium">{project.transactions.length} transaction{project.transactions.length !== 1 ? 's' : ''}</span>
+                            </div>
                           </div>
                         )}
                       </div>

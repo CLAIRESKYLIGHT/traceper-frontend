@@ -365,39 +365,6 @@ export default function Map() {
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            How to Use
-          </h3>
-          <ul className="text-sm text-blue-800 space-y-2 list-disc list-inside">
-            {mapType === "google" ? (
-              <>
-                <li>Google Maps is currently displayed - you can zoom, pan, and explore Matnog municipality</li>
-                <li>Click on any barangay in the list above to view its details</li>
-                <li>Use the search and navigation controls in Google Maps to explore different areas</li>
-                <li>To switch to a custom map image, add <code className="bg-blue-100 px-1 rounded">matnog-map.jpg</code> to the public folder</li>
-              </>
-            ) : mapImageLoaded ? (
-              <>
-                <li>Click on any barangay marker on the map to view its details</li>
-                <li>Hover over markers to see barangay information</li>
-                <li>Click on barangays in the list below to navigate to their details</li>
-                <li>To customize barangay positions, edit the <code className="bg-blue-100 px-1 rounded">barangayPositions</code> object in the Map component</li>
-              </>
-            ) : (
-              <>
-                <li>Click on any barangay in the list above to view its details</li>
-                <li>Add a map image to enable the interactive map view, or use Google Maps</li>
-                <li>Once the map is added, you'll be able to click on markers directly on the map</li>
-              </>
-            )}
-          </ul>
-        </div>
-
         {/* Toast Notification */}
         {toast && (
           <Toast
