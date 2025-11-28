@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import API from "../services/api";
 import { useAuth } from "../utils/useAuth";
 import Toast from "../components/Toast";
@@ -6,6 +7,7 @@ import ConfirmModal from "../components/ConfirmModal";
 import SearchBar from "../components/SearchBar";
 
 export default function Documents() {
+  const location = useLocation();
   const { isAdmin, userRole } = useAuth();
   const [documents, setDocuments] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -101,6 +103,28 @@ export default function Documents() {
       console.error("Error fetching initial data:", err);
     });
   }, []);
+
+  // Handle navigation from Projects page
+  useEffect(() => {
+    if (location.state?.scrollToDocument) {
+      const documentId = location.state.scrollToDocument;
+      // Wait for documents to load and then scroll
+      setTimeout(() => {
+        const element = document.getElementById(`document-${documentId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight the document briefly
+          element.classList.add('ring-4', 'ring-teal-500', 'ring-offset-2');
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-teal-500', 'ring-offset-2');
+          }, 2000);
+        }
+      }, 500);
+    }
+    if (location.state?.filterProject) {
+      setFilterProject(location.state.filterProject.toString());
+    }
+  }, [location.state, documents]);
 
   // ✅ Handle upload
   const handleUpload = async (e) => {
@@ -602,6 +626,7 @@ export default function Documents() {
             {filteredDocuments.map((doc, index) => (
             <div
               key={doc.id}
+              id={`document-${doc.id}`}
               className="card-modern overflow-hidden animate-scaleIn"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
