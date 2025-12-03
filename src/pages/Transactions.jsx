@@ -104,6 +104,24 @@ export default function Transactions() {
     }
   };
 
+  // ✅ Refetch a specific project to get updated amount_spent (after trigger updates)
+  const refetchProject = async (projectId) => {
+    try {
+      const response = await API.get(`/projects/${projectId}`);
+      const projectData = response.data?.data || response.data;
+      
+      // Update the project in the projects list
+      setProjects(prev => prev.map(proj => 
+        proj.id === projectId ? projectData : proj
+      ));
+      
+      console.log("✅ Project refetched with updated amount_spent:", projectData);
+    } catch (err) {
+      console.warn("⚠️ Failed to refetch project, but transaction was saved:", err);
+      // Don't throw - transaction was successful, just refetch failed
+    }
+  };
+
   // ✅ Fetch officials for dropdown
   const fetchOfficials = async () => {
     try {
@@ -214,12 +232,25 @@ export default function Transactions() {
     try {
       console.log("📤 Submitting transaction:", submitData);
       
+      let projectId = submitData.project_id;
+      
       if (editingTransaction) {
         const response = await API.put(`/transactions/${editingTransaction.id}`, submitData);
         console.log("✅ Transaction updated:", response);
+        
+        // Get project_id from response or use the one from form
+        projectId = response.data?.data?.project_id || submitData.project_id;
       } else {
         const response = await API.post("/transactions", submitData);
         console.log("✅ Transaction created:", response);
+        
+        // Get project_id from response or use the one from form
+        projectId = response.data?.data?.project_id || submitData.project_id;
+      }
+      
+      // IMPORTANT: Refetch project to get updated amount_spent (trigger updated it)
+      if (projectId) {
+        await refetchProject(projectId);
       }
       
       // Reset form
@@ -289,7 +320,18 @@ export default function Transactions() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
       try {
+        // First, get the transaction to know which project to refetch
+        const transaction = transactions.find(tx => tx.id === id);
+        const projectId = transaction?.project_id;
+        
+        // Delete the transaction
         await API.delete(`/transactions/${id}`);
+        
+        // IMPORTANT: Refetch project to get updated amount_spent (trigger updated it)
+        if (projectId) {
+          await refetchProject(projectId);
+        }
+        
         await fetchTransactions();
         alert("Transaction deleted successfully!");
       } catch (err) {

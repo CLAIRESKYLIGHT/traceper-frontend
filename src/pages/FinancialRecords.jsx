@@ -56,6 +56,31 @@ export default function FinancialRecords() {
     }
   };
 
+  // ✅ Refetch a specific financial record to get calculated totals (after trigger updates)
+  const refetchFinancialRecord = async (recordId) => {
+    try {
+      const response = await API.get(`/financial-records/${recordId}`);
+      const recordData = response.data?.data || response.data;
+      
+      // Update in records list
+      setRecords(prev => prev.map(rec => 
+        rec.id === recordId ? recordData : rec
+      ));
+      
+      // If this is the selected record, update it
+      if (selectedRecord && selectedRecord.id === recordId) {
+        setSelectedRecord(recordData);
+      }
+      
+      console.log("✅ Financial record refetched with calculated totals:", recordData);
+      return recordData;
+    } catch (err) {
+      console.warn("⚠️ Failed to refetch financial record, but record was saved:", err);
+      // Don't throw - record was successful, just refetch failed
+      return null;
+    }
+  };
+
   const handleYearChange = (year) => {
     setSelectedYear(year);
     if (year) {
@@ -146,12 +171,23 @@ export default function FinancialRecords() {
     };
 
     try {
+      let recordId;
+      
       if (selectedRecord) {
-        await API.put(`/financial-records/${selectedRecord.id}`, submitData);
+        const response = await API.put(`/financial-records/${selectedRecord.id}`, submitData);
+        recordId = response.data?.data?.id || selectedRecord.id;
       } else {
-        await API.post("/financial-records", submitData);
+        const response = await API.post("/financial-records", submitData);
+        recordId = response.data?.data?.id;
       }
+      
       await fetchRecords();
+      
+      // IMPORTANT: Refetch the financial record to get calculated totals (total_revenue, total_expenditures, net_equity)
+      if (recordId) {
+        await refetchFinancialRecord(recordId);
+      }
+      
       closeModal();
       alert("Financial record saved successfully!");
     } catch (err) {

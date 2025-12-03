@@ -148,6 +148,24 @@ export default function Financials() {
     }
   };
 
+  // ✅ Refetch a specific project to get updated amount_spent (after trigger updates)
+  const refetchProject = async (projectId) => {
+    try {
+      const response = await API.get(`/projects/${projectId}`);
+      const projectData = response.data?.data || response.data;
+      
+      // Update the project in the projects list
+      setProjects(prev => prev.map(proj => 
+        proj.id === projectId ? projectData : proj
+      ));
+      
+      console.log("✅ Project refetched with updated amount_spent:", projectData);
+    } catch (err) {
+      console.warn("⚠️ Failed to refetch project, but transaction was saved:", err);
+      // Don't throw - transaction was successful, just refetch failed
+    }
+  };
+
   const fetchOfficials = async () => {
     try {
       const response = await API.get("/officials");
@@ -280,14 +298,28 @@ export default function Financials() {
     };
 
     try {
+      let projectId = submitData.project_id;
+      let response;
+      
       if (editingTransaction && editingTransaction.id) {
         console.log("Updating transaction:", editingTransaction.id, submitData);
-        await API.put(`/transactions/${editingTransaction.id}`, submitData);
+        response = await API.put(`/transactions/${editingTransaction.id}`, submitData);
         setToast({ message: "Transaction updated successfully!", type: "success" });
+        
+        // Get project_id from response or use the one from form
+        projectId = response.data?.data?.project_id || submitData.project_id;
       } else {
         console.log("Creating new transaction:", submitData);
-        await API.post("/transactions", submitData);
+        response = await API.post("/transactions", submitData);
         setToast({ message: "Transaction added successfully!", type: "success" });
+        
+        // Get project_id from response or use the one from form
+        projectId = response.data?.data?.project_id || submitData.project_id;
+      }
+      
+      // IMPORTANT: Refetch project to get updated amount_spent (trigger updated it)
+      if (projectId) {
+        await refetchProject(projectId);
       }
       
       setTransactionForm({ 
@@ -336,6 +368,8 @@ export default function Financials() {
 
   const handleDeleteTransaction = (id) => {
     const transaction = transactions.find(tx => tx.id === id);
+    const projectId = transaction?.project_id;
+    
     setConfirmModal({
       isOpen: true,
       title: "Delete Transaction",
@@ -343,7 +377,14 @@ export default function Financials() {
       type: "danger",
       onConfirm: async () => {
         try {
+          // Delete the transaction
           await API.delete(`/transactions/${id}`);
+          
+          // IMPORTANT: Refetch project to get updated amount_spent (trigger updated it)
+          if (projectId) {
+            await refetchProject(projectId);
+          }
+          
           await fetchTransactions();
           setToast({ message: "Transaction deleted successfully!", type: "success" });
         } catch (err) {
@@ -549,16 +590,44 @@ export default function Financials() {
     };
 
     try {
+      let recordId;
+      
       if (selectedRecord && selectedRecord.id) {
         console.log("Updating financial record:", selectedRecord.id, submitData);
-        await API.put(`/financial-records/${selectedRecord.id}`, submitData);
+        const response = await API.put(`/financial-records/${selectedRecord.id}`, submitData);
         setToast({ message: "Financial record updated successfully!", type: "success" });
+        recordId = response.data?.data?.id || selectedRecord.id;
       } else {
         console.log("Creating new financial record:", submitData);
-        await API.post("/financial-records", submitData);
+        const response = await API.post("/financial-records", submitData);
         setToast({ message: "Financial record created successfully!", type: "success" });
+        recordId = response.data?.data?.id;
       }
+      
       await fetchRecords();
+      
+      // IMPORTANT: Refetch the financial record to get calculated totals (total_revenue, total_expenditures, net_equity)
+      if (recordId) {
+        try {
+          const recordResponse = await API.get(`/financial-records/${recordId}`);
+          const updatedRecord = recordResponse.data?.data || recordResponse.data;
+          
+          // Update in records list
+          setRecords(prev => prev.map(rec => 
+            rec.id === recordId ? updatedRecord : rec
+          ));
+          
+          // If we were viewing this record, update it
+          if (selectedRecord && selectedRecord.id === recordId) {
+            setSelectedRecord(updatedRecord);
+          }
+          
+          console.log("✅ Financial record refetched with calculated totals:", updatedRecord);
+        } catch (refetchErr) {
+          console.warn("⚠️ Failed to refetch financial record, but record was saved:", refetchErr);
+        }
+      }
+      
       // If we were viewing a record by year, refresh it
       if (selectedRecord && selectedRecord.year) {
         await fetchRecordByYear(selectedRecord.year);
