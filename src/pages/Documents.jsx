@@ -5,6 +5,7 @@ import { useAuth } from "../utils/useAuth";
 import Toast from "../components/Toast";
 import ConfirmModal from "../components/ConfirmModal";
 import SearchBar from "../components/SearchBar";
+import { getStorageUrl } from "../utils/config";
 
 export default function Documents() {
   const location = useLocation();
@@ -665,7 +666,7 @@ export default function Documents() {
                 </div>
                 <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
                   <a
-                    href={`http://127.0.0.1:8000/storage/${doc.file_path}`}
+                    href={getStorageUrl(doc.file_path)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium text-center"

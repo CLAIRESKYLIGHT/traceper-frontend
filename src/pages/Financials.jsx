@@ -7,6 +7,7 @@ import SearchBar from "../components/SearchBar";
 import RevenueExpenseChart from "../components/charts/RevenueExpenseChart";
 import FinancialChart from "../components/charts/FinancialChart";
 import TransactionTypeChart from "../components/charts/TransactionTypeChart";
+import { getStorageUrl } from "../utils/config";
 
 export default function Financials() {
   const { isAdmin } = useAuth();
@@ -997,7 +998,7 @@ export default function Financials() {
                                     {tx.documents.map((doc) => (
                                       <a
                                         key={doc.id}
-                                        href={`http://127.0.0.1:8000/storage/${doc.file_path}`}
+                                        href={getStorageUrl(doc.file_path)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
