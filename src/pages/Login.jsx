@@ -60,7 +60,7 @@ export default function Login() {
         setError(errorMessage);
       } else if (err.request) {
         // Request was made but no response received
-        setError("Cannot connect to server. Please check if the backend is running at http://127.0.0.1:8000");
+        setError("Cannot connect to server. Please check your internet connection and try again.");
       } else {
         // Something else happened
         setError(err.message || "An unexpected error occurred");

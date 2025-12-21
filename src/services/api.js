@@ -1,7 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL } from "../utils/config";
 
-// ✅ Get API base URL from environment variable, fallback to default
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
+// ✅ API base URL is now imported from config
 
 // ✅ Correct Laravel API base URL
 const API = axios.create({
